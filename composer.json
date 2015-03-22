@@ -1,36 +1,31 @@
 {
-    "name": "league/oauth2-client",
-    "description": "OAuth 2.0 Client Library",
+    "name": "league/oauth2-google",
+    "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Woody Gilk",
+            "email": "woody.gilk@gmail.com",
+            "homepage": "http://shadowhand.me"
+        }
+    ],
+    "keywords": [
+        "oauth",
+        "oauth2",
+        "client",
+        "authorization",
+        "authentication",
+        "google"
+    ],
     "require": {
         "php": ">=5.4.0",
-        "guzzle/guzzle": "~3.7"
+        "league/oauth2-client": "~0.10.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "~0.9",
-        "squizlabs/php_codesniffer": "~2.0",
-        "satooshi/php-coveralls": "0.6.*",
-        "jakub-onderka/php-parallel-lint": "0.8.*"
+        "squizlabs/php_codesniffer": "~2.0"
     },
-    "keywords": [
-        "oauth",
-        "oauth2",
-        "authorization",
-        "authentication",
-        "idp",
-        "identity",
-        "sso",
-        "single sign on"
-    ],
-    "authors": [
-        {
-            "name": "Alex Bilbie",
-            "email": "hello@alexbilbie.com",
-            "homepage": "http://www.alexbilbie.com",
-            "role": "Developer"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "League\\OAuth2\\Client\\": "src/"
@@ -38,12 +33,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "League\\OAuth2\\Client\\Test\\": "test/src/"
+            "League\\OAuth2\\Client\\Test\\": "tests/src/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.10.x-dev"
-        }
+    "branch-alias": {
+        "dev-master": "0.0.x-dev"
     }
 }

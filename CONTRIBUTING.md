@@ -2,7 +2,7 @@
 
 Contributions are **welcome** and will be fully **credited**.
 
-We accept contributions via Pull Requests on [Github](https://github.com/thephpleague/oauth2-client).
+We accept contributions via Pull Requests on [Github](https://github.com/thephpleague/oauth2-google).
 
 
 ## Pull Requests
