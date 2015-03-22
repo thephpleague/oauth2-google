@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/travis/thephpleague/oauth2-google.svg)](https://travis-ci.org/thephpleague/oauth2-google)
 [![Code Coverage](https://img.shields.io/coveralls/thephpleague/oauth2-google.svg)](https://coveralls.io/r/thephpleague/oauth2-google)
 [![Code Quality](https://img.shields.io/scrutinizer/g/thephpleague/oauth2-google.svg)](https://scrutinizer-ci.com/g/thephpleague/oauth2-google/)
-[![License](https://img.shields.io/packagist/l/thephpleague/oauth2-google.svg)](https://github.com/thephpleague/oauth2-google/blob/master/LICENSE)
+[![License](https://img.shields.io/packagist/l/league/oauth2-google.svg)](https://github.com/thephpleague/oauth2-google/blob/master/LICENSE)
 [![Latest Stable Version](https://img.shields.io/packagist/v/league/oauth2-google.svg)](https://packagist.org/packages/league/oauth2-google)
 
 This package provides Google OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
