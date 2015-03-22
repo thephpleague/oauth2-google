@@ -12,7 +12,11 @@
 >
     <testsuites>
         <testsuite name="Package Test Suite">
-            <directory suffix=".php">./test/</directory>
+            <directory suffix=".php">test/</directory>
         </testsuite>
     </testsuites>
+    <logging>
+        <log type="coverage-text" target="build/coverage.txt" />
+        <log type="coverage-clover" target="build/logs/clover.xml" />
+    </logging>
 </phpunit>
