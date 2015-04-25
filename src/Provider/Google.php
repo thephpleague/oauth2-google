@@ -60,10 +60,10 @@ class Google extends AbstractProvider
 
     public function urlUserDetails(AccessToken $token)
     {
-        return
-            'https://www.googleapis.com/plus/v1/people/me?'.
-            'fields=id%2Cname(familyName%2CgivenName)%2CdisplayName%2C'.
-            'emails%2Fvalue%2Cimage%2Furl&alt=json';
+        return 'https://www.googleapis.com/plus/v1/people/me?' . $this->httpBuildQuery([
+                'fields' => 'id,name(familyName,givenName),displayName,emails/value,image/url',
+                'alt'    => 'json',
+            ]);
     }
 
     public function userDetails($response, AccessToken $token)
