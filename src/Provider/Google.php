@@ -3,6 +3,7 @@
 namespace League\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Entity\User;
+use League\OAuth2\Client\Token\AccessToken;
 
 class Google extends AbstractProvider
 {
@@ -57,7 +58,7 @@ class Google extends AbstractProvider
         return 'https://accounts.google.com/o/oauth2/token';
     }
 
-    public function urlUserDetails(\League\OAuth2\Client\Token\AccessToken $token)
+    public function urlUserDetails(AccessToken $token)
     {
         return
             'https://www.googleapis.com/plus/v1/people/me?'.
@@ -65,7 +66,7 @@ class Google extends AbstractProvider
             'emails%2Fvalue%2Cimage%2Furl&alt=json';
     }
 
-    public function userDetails($response, \League\OAuth2\Client\Token\AccessToken $token)
+    public function userDetails($response, AccessToken $token)
     {
         $response = (array) $response;
 
@@ -90,19 +91,19 @@ class Google extends AbstractProvider
         return $user;
     }
 
-    public function userUid($response, \League\OAuth2\Client\Token\AccessToken $token)
+    public function userUid($response, AccessToken $token)
     {
         return $response->id;
     }
 
-    public function userEmail($response, \League\OAuth2\Client\Token\AccessToken $token)
+    public function userEmail($response, AccessToken $token)
     {
         return ($response->emails &&
             count($response->emails) &&
             $response->emails[0]->value) ? $response->emails[0]->value : null;
     }
 
-    public function userScreenName($response, \League\OAuth2\Client\Token\AccessToken $token)
+    public function userScreenName($response, AccessToken $token)
     {
         return [$response->name->givenName, $response->name->familyName];
     }
