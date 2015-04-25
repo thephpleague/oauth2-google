@@ -46,17 +46,22 @@ $provider = new League\OAuth2\Client\Provider\Google([
     'hostedDomain' => 'example.com',
 ]);
 
-if (!isset($_GET['code'])) {
+if (!empty($_GET['error'])) {
+
+    // Got an error, probably user denied access
+    exit('Got error: ' . $_GET['error']);
+
+} elseif (empty($_GET['code'])) {
 
     // If we don't have an authorization code then get one
     $authUrl = $provider->getAuthorizationUrl();
     $_SESSION['oauth2state'] = $provider->state;
-    header('Location: '.$authUrl);
+    header('Location: ' . $authUrl);
     exit;
 
-// Check given state against previously stored one to mitigate CSRF attack
 } elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
 
+    // State is invalid, possible CSRF attack in progress
     unset($_SESSION['oauth2state']);
     exit('Invalid state');
 
@@ -79,7 +84,8 @@ if (!isset($_GET['code'])) {
     } catch (Exception $e) {
 
         // Failed to get user details
-        exit('Oh dear...');
+        exit('Something went wrong: ' . $e->getMessage());
+
     }
 
     // Use this to interact with an API on the users behalf
