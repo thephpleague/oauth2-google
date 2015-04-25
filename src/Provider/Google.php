@@ -14,7 +14,7 @@ class Google extends AbstractProvider
         'email',
     ];
 
-    public $authorizationHeader = 'OAuth';
+    public $authorizationHeader = 'Bearer';
 
     /**
      * @var string If set, this will be sent to google as the "hd" parameter.
