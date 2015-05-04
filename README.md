@@ -1,5 +1,7 @@
 # Google Provider for OAuth 2.0 Client
 
+[![Join the chat at https://gitter.im/thephpleague/oauth2-google](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thephpleague/oauth2-google?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://img.shields.io/travis/thephpleague/oauth2-google.svg)](https://travis-ci.org/thephpleague/oauth2-google)
 [![Code Coverage](https://img.shields.io/coveralls/thephpleague/oauth2-google.svg)](https://coveralls.io/r/thephpleague/oauth2-google)
 [![Code Quality](https://img.shields.io/scrutinizer/g/thephpleague/oauth2-google.svg)](https://scrutinizer-ci.com/g/thephpleague/oauth2-google/)
