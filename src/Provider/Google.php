@@ -2,51 +2,27 @@
 
 namespace League\OAuth2\Client\Provider;
 
-use League\OAuth2\Client\Entity\User;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 
 class Google extends AbstractProvider
 {
-    public $scopeSeparator = ' ';
+    use BearerAuthorizationTrait;
 
-    public $scopes = [
-        'profile',
-        'email',
-    ];
-
-    public $authorizationHeader = 'Bearer';
-
-    /**
-     * @var string If set, this will be sent to google as the "hd" parameter.
-     * @link https://developers.google.com/accounts/docs/OAuth2Login#hd-param
-     */
-    public $hostedDomain = '';
-
-    public function setHostedDomain($hd)
-    {
-        $this->hostedDomain = $hd;
-    }
-
-    public function getHostedDomain()
-    {
-        return $this->hostedDomain;
-    }
+    const SCOPE_SEPARATOR = ' ';
+    const ACCESS_TOKEN_UID = 'id';
 
     /**
      * @var string If set, this will be sent to google as the "access_type" parameter.
      * @link https://developers.google.com/accounts/docs/OAuth2WebServer#offline
      */
-    public $accessType = '';
+    protected $accessType;
 
-    public function setAccessType($accessType)
-    {
-        $this->accessType = $accessType;
-    }
-
-    public function getAccessType()
-    {
-        return $this->accessType;
-    }
+    /**
+     * @var string If set, this will be sent to google as the "hd" parameter.
+     * @link https://developers.google.com/accounts/docs/OAuth2Login#hd-param
+     */
+    protected $hostedDomain;
 
     public function urlAuthorize()
     {
@@ -66,60 +42,39 @@ class Google extends AbstractProvider
             ]);
     }
 
-    public function userDetails($response, AccessToken $token)
-    {
-        $response = (array) $response;
-
-        $user = new User();
-
-        $imageUrl = (isset($response['image']) &&
-            $response['image']->url) ? $response['image']->url : null;
-        $email =
-            (isset($response['emails']) &&
-            count($response['emails']) &&
-            $response['emails'][0]->value)? $response['emails'][0]->value : null;
-
-        $user->exchangeArray([
-            'uid' => $response['id'],
-            'name' => $response['displayName'],
-            'firstname' => $response['name']->givenName,
-            'lastName' => $response['name']->familyName,
-            'email' => $email,
-            'imageUrl' => $imageUrl,
-        ]);
-
-        return $user;
-    }
-
-    public function userUid($response, AccessToken $token)
-    {
-        return $response->id;
-    }
-
-    public function userEmail($response, AccessToken $token)
-    {
-        return ($response->emails &&
-            count($response->emails) &&
-            $response->emails[0]->value) ? $response->emails[0]->value : null;
-    }
-
-    public function userScreenName($response, AccessToken $token)
-    {
-        return [$response->name->givenName, $response->name->familyName];
-    }
-
-    public function getAuthorizationUrl($options = array())
+    public function getAuthorizationUrl(array $options = [])
     {
         $url = parent::getAuthorizationUrl($options);
 
-        if (!empty($this->hostedDomain)) {
-            $url .= '&' . $this->httpBuildQuery(['hd' => $this->hostedDomain]);
-        }
+        $params = array_filter([
+            'hd'          => $this->hostedDomain,
+            'access_type' => $this->accessType,
+        ]);
 
-        if (!empty($this->accessType)) {
-            $url .= '&' . $this->httpBuildQuery(['access_type'=> $this->accessType]);
+        if ($params) {
+            $url .= '&' . $this->httpBuildQuery($params);
         }
 
         return $url;
+    }
+
+    protected function getDefaultScopes()
+    {
+        return [
+            'profile',
+            'email',
+        ];
+    }
+
+    protected function checkResponse(array $response)
+    {
+        if (!empty($response['error'])) {
+            throw new IdentityProviderException($response['error']['error'], $response['error']['code'], $response);
+        }
+    }
+
+    protected function prepareUserDetails(array $response, AccessToken $token)
+    {
+        return new GoogleUser($response);
     }
 }
