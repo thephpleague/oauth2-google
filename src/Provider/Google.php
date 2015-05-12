@@ -2,6 +2,7 @@
 
 namespace League\OAuth2\Client\Provider;
 
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 
@@ -69,7 +70,7 @@ class Google extends AbstractProvider
     protected function checkResponse(array $response)
     {
         if (!empty($response['error'])) {
-            throw new IdentityProviderException($response['error']['error'], $response['error']['code'], $response);
+            throw new IdentityProviderException($response['error'], 0, $response);
         }
     }
 
