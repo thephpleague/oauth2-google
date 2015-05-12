@@ -86,5 +86,14 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mock_last_name', $user->getLastName());
         $this->assertEquals('mock_email', $user->getEmail());
         $this->assertEquals('mock_image_url', $user->getAvatar());
+
+        $user = $user->toArray();
+
+        $this->assertArrayHasKey('id', $user);
+        $this->assertArrayHasKey('name', $user);
+        $this->assertArrayHasKey('firstName', $user);
+        $this->assertArrayHasKey('lastName', $user);
+        $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('avatar', $user);
     }
 }

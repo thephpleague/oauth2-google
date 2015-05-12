@@ -107,4 +107,21 @@ class GoogleUser implements UserInterface
     {
         return $this->imageUrl;
     }
+
+    /**
+     * Get user data as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'id'        => $this->id,
+            'name'      => $this->displayName,
+            'firstName' => $this->givenName,
+            'lastName'  => $this->familyName,
+            'email'     => $this->email,
+            'avatar'    => $this->imageUrl,
+        ];
+    }
 }
