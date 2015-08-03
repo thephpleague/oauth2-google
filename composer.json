@@ -17,9 +17,9 @@
         "authentication",
         "google"
     ],
+    "minimum-stability": "beta",
     "require": {
-        "php": ">=5.4.0",
-        "league/oauth2-client": "~1.0@dev"
+        "league/oauth2-client": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
