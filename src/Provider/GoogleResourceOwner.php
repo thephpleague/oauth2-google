@@ -2,7 +2,7 @@
 
 namespace League\OAuth2\Client\Provider;
 
-class GoogleUser implements UserInterface
+class GoogleResourceOwner implements ResourceOwnerInterface
 {
     /**
      * @var string
@@ -53,7 +53,7 @@ class GoogleUser implements UserInterface
         }
     }
 
-    public function getUserId()
+    public function getId()
     {
         return $this->id;
     }

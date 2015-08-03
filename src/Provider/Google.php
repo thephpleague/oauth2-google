@@ -5,13 +5,13 @@ namespace League\OAuth2\Client\Provider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
+use Psr\Http\Message\ResponseInterface;
 
 class Google extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
-    const SCOPE_SEPARATOR = ' ';
-    const ACCESS_TOKEN_UID = 'id';
+    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'id';
 
     /**
      * @var string If set, this will be sent to google as the "access_type" parameter.
@@ -25,38 +25,35 @@ class Google extends AbstractProvider
      */
     protected $hostedDomain;
 
-    public function urlAuthorize()
+    public function getBaseAuthorizationUrl()
     {
         return 'https://accounts.google.com/o/oauth2/auth';
     }
 
-    public function urlAccessToken()
+    public function getBaseAccessTokenUrl(array $params)
     {
         return 'https://accounts.google.com/o/oauth2/token';
     }
 
-    public function urlUserDetails(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return 'https://www.googleapis.com/plus/v1/people/me?' . $this->httpBuildQuery([
+        return 'https://www.googleapis.com/plus/v1/people/me?' . http_build_query([
                 'fields' => 'id,name(familyName,givenName),displayName,emails/value,image/url',
                 'alt'    => 'json',
             ]);
     }
 
-    public function getAuthorizationUrl(array $options = [])
+    protected function getAuthorizationParameters(array $options)
     {
-        $url = parent::getAuthorizationUrl($options);
+        $params = array_merge(
+            parent::getAuthorizationParameters($options),
+            array_filter([
+                'hd'          => $this->hostedDomain,
+                'access_type' => $this->accessType,
+            ])
+        );
 
-        $params = array_filter([
-            'hd'          => $this->hostedDomain,
-            'access_type' => $this->accessType,
-        ]);
-
-        if ($params) {
-            $url .= '&' . $this->httpBuildQuery($params);
-        }
-
-        return $url;
+        return $params;
     }
 
     protected function getDefaultScopes()
@@ -67,15 +64,20 @@ class Google extends AbstractProvider
         ];
     }
 
-    protected function checkResponse(array $response)
+    protected function getScopeSeparator()
     {
-        if (!empty($response['error'])) {
-            throw new IdentityProviderException($response['error'], 0, $response);
+        return ' ';
+    }
+
+    protected function checkResponse(ResponseInterface $response, $data)
+    {
+        if (!empty($data['error'])) {
+            throw new IdentityProviderException($data['error'], 0, $response);
         }
     }
 
-    protected function prepareUserDetails(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token)
     {
-        return new GoogleUser($response);
+        return new GoogleResourceOwner($response);
     }
 }
