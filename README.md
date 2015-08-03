@@ -16,14 +16,13 @@ a patch via pull request.
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
 
-
 ## Requirements
 
 The following versions of PHP are supported.
 
-* PHP 5.4
 * PHP 5.5
 * PHP 5.6
+* PHP 7.0
 * HHVM
 
 ## Installation
@@ -76,11 +75,11 @@ if (!empty($_GET['error'])) {
     // Optional: Now you have a token you can look up a users profile data
     try {
 
-        // We got an access token, let's now get the user's details
-        $userDetails = $provider->getUserDetails($token);
+        // We got an access token, let's now get the owner details
+        $ownerDetails = $provider->getResourceOwner($token);
 
         // Use these details to create a new profile
-        printf('Hello %s!', $userDetails->firstName);
+        printf('Hello %s!', $ownerDetails->firstName);
 
     } catch (Exception $e) {
 
