@@ -59,8 +59,9 @@ class Google extends AbstractProvider
     protected function getDefaultScopes()
     {
         return [
-            'profile',
             'email',
+            'openid',
+            'profile',
         ];
     }
 
