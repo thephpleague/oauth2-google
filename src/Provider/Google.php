@@ -72,7 +72,15 @@ class Google extends AbstractProvider
     protected function checkResponse(ResponseInterface $response, $data)
     {
         if (!empty($data['error'])) {
-            throw new IdentityProviderException($data['error'], 0, $response);
+            $code  = 0;
+            $error = $data['error'];
+
+            if (is_array($error)) {
+                $code  = $error['code'];
+                $error = $error['message'];
+            }
+
+            throw new IdentityProviderException($error, $code, $data);
         }
     }
 
