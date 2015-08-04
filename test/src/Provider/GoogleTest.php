@@ -44,7 +44,10 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('mock_access_type', $query['access_type']);
         $this->assertEquals('mock_domain', $query['hd']);
-        $this->assertEquals('profile email', $query['scope']);
+        
+        $this->assertContains('email', $query['scope']);
+        $this->assertContains('profile', $query['scope']);
+        $this->assertContains('openid', $query['scope']);
 
         $this->assertAttributeNotEmpty('state', $this->provider);
     }
