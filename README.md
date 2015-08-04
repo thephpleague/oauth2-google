@@ -42,7 +42,6 @@ $provider = new League\OAuth2\Client\Provider\Google([
     'clientId'     => '{google-app-id}',
     'clientSecret' => '{google-app-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
-    'scopes'       => ['profile', 'email', '...'],
     'hostedDomain' => 'example.com',
 ]);
 
