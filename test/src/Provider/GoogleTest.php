@@ -69,6 +69,45 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('/plus/v1/people/me', $uri['path']);
         $this->assertNotContains('mock_access_token', $url);
+
+    }
+
+    public function testResourceOwnerDetailsUrlCustomFields()
+    {
+        $provider = new GoogleProvider([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+            'userFields' => [
+                'domain',
+                'gender',
+                'verified',
+            ],
+        ]);
+
+        $token = m::mock('League\OAuth2\Client\Token\AccessToken', [['access_token' => 'mock_access_token']]);
+
+        $url = $provider->getResourceOwnerDetailsUrl($token);
+        $uri = parse_url($url);
+        parse_str($uri['query'], $query);
+
+        $this->assertArrayHasKey('fields', $query);
+        $this->assertArrayHasKey('alt', $query);
+
+        // Always JSON for consistency
+        $this->assertEquals('json', $query['alt']);
+
+        $fields = explode(',', $query['fields']);
+
+        // Default values
+        $this->assertContains('displayName', $fields);
+        $this->assertContains('emails/value', $fields);
+        $this->assertContains('image/url', $fields);
+
+        // Configured values
+        $this->assertContains('domain', $fields);
+        $this->assertContains('gender', $fields);
+        $this->assertContains('verified', $fields);
     }
 
     public function testUserData()
