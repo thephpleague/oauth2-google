@@ -44,7 +44,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('mock_access_type', $query['access_type']);
         $this->assertEquals('mock_domain', $query['hd']);
-        
+
         $this->assertContains('email', $query['scope']);
         $this->assertContains('profile', $query['scope']);
         $this->assertContains('openid', $query['scope']);
@@ -52,7 +52,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeNotEmpty('state', $this->provider);
     }
 
-    public function testUrlAccessToken()
+    public function testBaseAccessTokenUrl()
     {
         $url = $this->provider->getBaseAccessTokenUrl([]);
         $uri = parse_url($url);
@@ -60,7 +60,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/o/oauth2/token', $uri['path']);
     }
 
-    public function testUrlUserDetails()
+    public function testResourceOwnerDetailsUrl()
     {
         $token = m::mock('League\OAuth2\Client\Token\AccessToken', [['access_token' => 'mock_access_token']]);
 
@@ -101,5 +101,30 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('emails', $user);
         $this->assertArrayHasKey('image', $user);
         $this->assertArrayHasKey('name', $user);
+    }
+
+    /**
+     * @expectedException League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     */
+    public function testErrorResponse()
+    {
+        $response = m::mock('GuzzleHttp\Psr7\Response');
+
+        $response->shouldReceive('getHeader')
+            ->with('content-type')
+            ->andReturn(['application/json']);
+
+        $response->shouldReceive('getBody')
+            ->andReturn('{"error": {"code": 400, "message": "I am an error"}}');
+
+        $provider = m::mock('League\OAuth2\Client\Provider\Google[sendRequest]')
+            ->shouldAllowMockingProtectedMethods();
+
+        $provider->shouldReceive('sendRequest')
+            ->times(1)
+            ->andReturn($response);
+
+        $token = m::mock('League\OAuth2\Client\Token\AccessToken');
+        $user = $provider->getResourceOwner($token);
     }
 }
