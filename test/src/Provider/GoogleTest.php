@@ -85,6 +85,8 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $token = m::mock('League\OAuth2\Client\Token\AccessToken');
         $user = $provider->getResourceOwner($token);
 
+        $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
+
         $this->assertEquals(12345, $user->getId());
         $this->assertEquals('mock_name', $user->getName());
         $this->assertEquals('mock_first_name', $user->getFirstName());
@@ -95,10 +97,9 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $user = $user->toArray();
 
         $this->assertArrayHasKey('id', $user);
+        $this->assertArrayHasKey('displayName', $user);
+        $this->assertArrayHasKey('emails', $user);
+        $this->assertArrayHasKey('image', $user);
         $this->assertArrayHasKey('name', $user);
-        $this->assertArrayHasKey('firstName', $user);
-        $this->assertArrayHasKey('lastName', $user);
-        $this->assertArrayHasKey('email', $user);
-        $this->assertArrayHasKey('avatar', $user);
     }
 }
