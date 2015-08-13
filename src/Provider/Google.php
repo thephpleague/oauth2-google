@@ -27,7 +27,7 @@ class Google extends AbstractProvider
 
     /**
      * @var array Default fields to be requested from the user profile.
-     * @link
+     * @link https://developers.google.com/+/web/api/rest/latest/people
      */
     protected $defaultUserFields = [
         'id',
