@@ -68,6 +68,8 @@ class Google extends AbstractProvider
             array_filter([
                 'hd'          => $this->hostedDomain,
                 'access_type' => $this->accessType,
+                // if the user is logged in with more than one account ask which one to use for the login!
+                'authuser'    => '-1'
             ])
         );
 
