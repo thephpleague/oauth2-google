@@ -100,6 +100,36 @@ if (!empty($_GET['error'])) {
 
 ### Refreshing a Token
 
+Refresh tokens are only provided to applications which request offline access. You can specify offline access by setting the `accessType` option in your provider:
+
+```php
+$provider = new League\OAuth2\Client\Provider\Google([
+    'clientId'     => '{google-app-id}',
+    'clientSecret' => '{google-app-secret}',
+    'redirectUri'  => 'https://example.com/callback-url',
+    'accessType'   => 'offline',
+]);
+```
+
+It is important to note that the refresh token is only returned on the first request after this it will be `null`. You should securely store the refresh token when it is returned:
+
+```php
+$token = $provider->getAccessToken('authorization_code', [
+    'code' => $code
+]);
+
+// persist the token in a database
+$refreshToken = $token->getRefreshToken();
+```
+
+If you ever need to get a new refresh token you can request one by forcing the approval prompt:
+
+```php
+$authUrl = $provider->getAuthorizationUrl(['approval_prompt' => 'force']);
+```
+
+Now you have everything you need to refresh an access token using a refresh token:
+
 ```php
 $provider = new League\OAuth2\Client\Provider\Google([
     'clientId'     => '{google-app-id}',
