@@ -35,6 +35,7 @@ class Google extends AbstractProvider
         'displayName',
         'emails/value',
         'image/url',
+        'url',
     ];
     /**
      * @var array Additional fields to be requested from the user profile.
