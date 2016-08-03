@@ -23,7 +23,7 @@ class GoogleUser implements ResourceOwnerInterface
     }
 
     /**
-     * Get perferred display name.
+     * Get preferred display name.
      *
      * @return string
      */
@@ -33,7 +33,7 @@ class GoogleUser implements ResourceOwnerInterface
     }
 
     /**
-     * Get perferred first name.
+     * Get preferred first name.
      *
      * @return string
      */
@@ -43,7 +43,7 @@ class GoogleUser implements ResourceOwnerInterface
     }
 
     /**
-     * Get perferred last name.
+     * Get preferred last name.
      *
      * @return string
      */
