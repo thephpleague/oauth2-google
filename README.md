@@ -48,7 +48,7 @@ $provider = new League\OAuth2\Client\Provider\Google([
 if (!empty($_GET['error'])) {
 
     // Got an error, probably user denied access
-    exit('Got error: ' . $_GET['error']);
+    exit('Got error: ' . htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'));
 
 } elseif (empty($_GET['code'])) {
 
