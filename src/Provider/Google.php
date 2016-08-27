@@ -42,6 +42,11 @@ class Google extends AbstractProvider
      */
     protected $userFields = [];
 
+    public function setUserFields(array $fields)
+    {
+        $this->userFields = $fields;
+    }
+
     public function getBaseAuthorizationUrl()
     {
         return 'https://accounts.google.com/o/oauth2/auth';
