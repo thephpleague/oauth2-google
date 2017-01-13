@@ -141,6 +141,20 @@ $grant = new League\OAuth2\Client\Grant\RefreshToken();
 $token = $provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 ```
 
+## Scopes
+
+If needed, you can include an array of scopes when getting the authorization url. Example:
+
+```
+$authorizationUrl = $provider->getAuthorizationUrl([
+    'scope' => [
+        'https://www.googleapis.com/auth/drive',
+    ]
+]);
+header('Location: ' . $authorizationUrl);
+exit;
+```
+
 ## Testing
 
 ``` bash
