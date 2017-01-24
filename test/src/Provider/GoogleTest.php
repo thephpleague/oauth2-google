@@ -2,9 +2,10 @@
 
 namespace League\OAuth2\Client\Test\Provider;
 
+use Eloquent\Phony\Phpunit\Phony;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
-
-use Mockery as m;
+use League\OAuth2\Client\Token\AccessToken;
 
 class GoogleTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,12 +20,6 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
             'hostedDomain' => 'mock_domain',
             'accessType' => 'mock_access_type'
         ]);
-    }
-
-    public function tearDown()
-    {
-        m::close();
-        parent::tearDown();
     }
 
     public function testAuthorizationUrl()
@@ -62,14 +57,13 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
     public function testResourceOwnerDetailsUrl()
     {
-        $token = m::mock('League\OAuth2\Client\Token\AccessToken', [['access_token' => 'mock_access_token']]);
+        $token = $this->mockAccessToken();
 
         $url = $this->provider->getResourceOwnerDetailsUrl($token);
         $uri = parse_url($url);
 
         $this->assertEquals('/plus/v1/people/me', $uri['path']);
         $this->assertNotContains('mock_access_token', $url);
-
     }
 
     public function testResourceOwnerDetailsUrlCustomFields()
@@ -85,7 +79,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $token = m::mock('League\OAuth2\Client\Token\AccessToken', [['access_token' => 'mock_access_token']]);
+        $token = $this->mockAccessToken();
 
         $url = $provider->getResourceOwnerDetailsUrl($token);
         $uri = parse_url($url);
@@ -112,17 +106,22 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
     public function testUserData()
     {
+        // Mock
         $response = json_decode('{"emails": [{"value": "mock_email"}],"id": "12345","displayName": "mock_name","name": {"familyName": "mock_last_name","givenName": "mock_first_name"},"image": {"url": "mock_image_url"}}', true);
 
-        $provider = m::mock('League\OAuth2\Client\Provider\Google[fetchResourceOwnerDetails]')
-            ->shouldAllowMockingProtectedMethods();
+        $token = $this->mockAccessToken();
 
-        $provider->shouldReceive('fetchResourceOwnerDetails')
-            ->times(1)
-            ->andReturn($response);
+        $provider = Phony::partialMock(GoogleProvider::class);
+        $provider->fetchResourceOwnerDetails->returns($response);
+        $google = $provider->get();
 
-        $token = m::mock('League\OAuth2\Client\Token\AccessToken');
-        $user = $provider->getResourceOwner($token);
+        // Execute
+        $user = $google->getResourceOwner($token);
+
+        // Verify
+        Phony::inOrder(
+            $provider->fetchResourceOwnerDetails->called()
+        );
 
         $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
 
@@ -142,28 +141,43 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('name', $user);
     }
 
-    /**
-     * @expectedException League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     */
     public function testErrorResponse()
     {
-        $response = m::mock('GuzzleHttp\Psr7\Response');
+        // Mock
+        $error_json = '{"error": {"code": 400, "message": "I am an error"}}';
 
-        $response->shouldReceive('getHeader')
-            ->with('content-type')
-            ->andReturn(['application/json']);
+        $response = Phony::mock('GuzzleHttp\Psr7\Response');
+        $response->getHeader->returns(['application/json']);
+        $response->getBody->returns($error_json);
 
-        $response->shouldReceive('getBody')
-            ->andReturn('{"error": {"code": 400, "message": "I am an error"}}');
+        $provider = Phony::partialMock(GoogleProvider::class);
+        $provider->getResponse->returns($response);
 
-        $provider = m::mock('League\OAuth2\Client\Provider\Google[sendRequest]')
-            ->shouldAllowMockingProtectedMethods();
+        $google = $provider->get();
 
-        $provider->shouldReceive('sendRequest')
-            ->times(1)
-            ->andReturn($response);
+        $token = $this->mockAccessToken();
 
-        $token = m::mock('League\OAuth2\Client\Token\AccessToken');
-        $user = $provider->getResourceOwner($token);
+        // Expect
+        $this->expectException(IdentityProviderException::class);
+
+        // Execute
+        $user = $google->getResourceOwner($token);
+
+        // Verify
+        Phony::inOrder(
+            $provider->getResponse->calledWith($this->instanceOf('GuzzleHttp\Psr7\Request')),
+            $response->getHeader->called(),
+            $response->getBody->called()
+        );
+    }
+
+    /**
+     * @return AccessToken
+     */
+    private function mockAccessToken()
+    {
+        return new AccessToken([
+            'access_token' => 'mock_access_token',
+        ]);
     }
 }
