@@ -19,10 +19,10 @@
     ],
     "minimum-stability": "beta",
     "require": {
-        "league/oauth2-client": "^2.0",
-        "eloquent/phony": "^0.14.6"
+        "league/oauth2-client": "^2.0"
     },
     "require-dev": {
+        "eloquent/phony": "^0.14.6",
         "phpunit/phpunit": "^5.0",
         "satooshi/php-coveralls": "^1.0",
         "squizlabs/php_codesniffer": "^2.0"
