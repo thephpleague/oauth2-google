@@ -3,9 +3,11 @@ language: php
 sudo: false
 
 cache:
-    directories:
-     - vendor
-     - $HOME/.composer/cache
+  directories:
+    - vendor
+    - $HOME/.composer/cache
+
+env: MINIMUM_VERSIONS=false
 
 php:
   - 5.6
@@ -15,19 +17,17 @@ php:
 matrix:
   include:
     - php: 5.6
-      env: 'COMPOSER_FLAGS="--prefer-stable --prefer-lowest"'
+      env: MINIMUM_VERSIONS=true
     - php: hhvm
       dist: trusty
 
-before_script:
-  - travis_retry composer self-update
-  - travis_retry composer install --no-interaction --prefer-source
-  - travis_retry composer require satooshi/php-coveralls --dev
+install:
+  - if [[ $MINIMUM_VERSIONS = false ]]; then composer install; fi
+  - if [[ $MINIMUM_VERSIONS = true ]]; then composer update --no-interaction --prefer-lowest; fi
 
 script:
-  - mkdir -p build/logs
-  - vendor/bin/phpunit
-  - vendor/bin/phpcs src --standard=psr2 -sp
+  - composer run test
+  - composer run check
 
 after_script:
   - |
