@@ -144,6 +144,13 @@ $provider = new League\OAuth2\Client\Provider\Google([
 $grant = new League\OAuth2\Client\Grant\RefreshToken();
 $token = $provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 ```
+## Resource Owner Attributes
+
+By default the Google plus API is used to load profile information. If you want to use the OpenIDConnect
+user info endpoint to load profile information then add `useOidcMode => true` to your configuration.
+
+The two endpoints provide attributes with different names and structures. The `GoogleUser` class hides
+these differences for the most common attributes.
 
 ## Scopes
 

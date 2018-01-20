@@ -9,7 +9,17 @@ use League\OAuth2\Client\Token\AccessToken;
 
 class GoogleTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Google provider using the Google Plus API for user details
+     * @var GoogleProvider
+     */
     protected $provider;
+
+    /**
+     * Google provider using the Google's OIDC user info endpoint for user details
+     * @var GoogleProvider
+     */
+    protected $providerOidc;
 
     protected function setUp()
     {
@@ -19,6 +29,15 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
             'redirectUri' => 'none',
             'hostedDomain' => 'mock_domain',
             'accessType' => 'mock_access_type'
+        ]);
+
+        $this->providerOidc = new GoogleProvider([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+            'hostedDomain' => 'mock_domain',
+            'accessType' => 'mock_access_type',
+            'useOidcMode' => true,
         ]);
     }
 
@@ -64,6 +83,15 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('/plus/v1/people/me', $uri['path']);
         $this->assertNotContains('mock_access_token', $url);
+    }
+
+    public function testResourceOwnerDetailsUrlOidc()
+    {
+        $token = $this->mockAccessToken();
+
+        $url = $this->providerOidc->getResourceOwnerDetailsUrl($token);
+        // Per 'userinfo_endpoint' of https://accounts.google.com/.well-known/openid-configuration
+        $this->assertEquals('https://www.googleapis.com/oauth2/v3/userinfo', $url);
     }
 
     public function testResourceOwnerDetailsUrlCustomFields()
@@ -139,6 +167,43 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('emails', $user);
         $this->assertArrayHasKey('image', $user);
         $this->assertArrayHasKey('name', $user);
+    }
+
+    public function testUserDataOidc()
+    {
+        // Mock
+        $response = json_decode('{"email": "mock_email","sub": "12345","name": "mock_name", "family_name": "mock_last_name","given_name": "mock_first_name", "picture": "mock_image_url"}', true);
+
+        $token = $this->mockAccessToken();
+
+        $provider = Phony::partialMock(GoogleProvider::class);
+        $provider->fetchResourceOwnerDetails->returns($response);
+        $google = $provider->get();
+
+        // Execute
+        $user = $google->getResourceOwner($token);
+
+        // Verify
+        Phony::inOrder(
+            $provider->fetchResourceOwnerDetails->called()
+        );
+
+        $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
+
+        $this->assertEquals(12345, $user->getId());
+        $this->assertEquals('mock_name', $user->getName());
+        $this->assertEquals('mock_first_name', $user->getFirstName());
+        $this->assertEquals('mock_last_name', $user->getLastName());
+        $this->assertEquals('mock_email', $user->getEmail());
+        $this->assertEquals('mock_image_url', $user->getAvatar());
+
+        $user = $user->toArray();
+
+        $this->assertArrayHasKey('sub', $user);
+        $this->assertArrayHasKey('name', $user);
+        $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('picture', $user);
+        $this->assertArrayHasKey('family_name', $user);
     }
 
     public function testErrorResponse()
