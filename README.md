@@ -25,6 +25,10 @@ The following versions of PHP are supported.
 * PHP 7.1
 * HHVM
 
+[Google Sign In](https://developers.googse.com/identity/sign-in/web/sign-in) wiill also need to be set up, which will provide you with the `{google-app-id}` and `{google-app-secret}` required (see [Usage](#usage) below).
+
+If you're using the default [scopes](#scopes) then you'll also need to enable the [Google+ API](https://developers.google.com/+/web/api/rest/) for your project.
+
 ## Installation
 
 To install, use composer:
@@ -154,6 +158,8 @@ $authorizationUrl = $provider->getAuthorizationUrl([
 header('Location: ' . $authorizationUrl);
 exit;
 ```
+
+Note that the default scopes include `email` and `profile`, which require that the [Google+ API](https://developers.google.com/+/web/api/rest/) is enabled for your project.
 
 ## Testing
 
