@@ -52,7 +52,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $url = $this->provider->getBaseAccessTokenUrl([]);
         $uri = parse_url($url);
 
-        $this->assertEquals('/o/oauth2/token', $uri['path']);
+        $this->assertEquals('/oauth2/v4/token', $uri['path']);
     }
 
     public function testResourceOwnerDetailsUrl()
