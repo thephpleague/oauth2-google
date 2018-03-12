@@ -5,6 +5,7 @@ namespace League\OAuth2\Client\Test\Provider;
 use Eloquent\Phony\Phpunit\Phony;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
+use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
 
 class GoogleOIDCTest extends \PHPUnit_Framework_TestCase
@@ -74,7 +75,7 @@ class GoogleOIDCTest extends \PHPUnit_Framework_TestCase
     public function testUserData()
     {
         // Mock
-        $response = json_decode('{"email": "mock_email","sub": "12345","name": "mock_name", "family_name": "mock_last_name","given_name": "mock_first_name", "picture": "mock_image_url"}', true);
+        $response = json_decode('{"email": "mock_email","sub": "12345","name": "mock_name", "family_name": "mock_last_name","given_name": "mock_first_name", "picture": "mock_image_url", "hd": "example.com"}', true);
 
         $token = $this->mockAccessToken();
 
@@ -97,6 +98,7 @@ class GoogleOIDCTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mock_first_name', $user->getFirstName());
         $this->assertEquals('mock_last_name', $user->getLastName());
         $this->assertEquals('mock_email', $user->getEmail());
+        $this->assertEquals('example.com', $user->getHostedDomain());
         $this->assertEquals('mock_image_url', $user->getAvatar());
 
         $user = $user->toArray();
@@ -104,6 +106,7 @@ class GoogleOIDCTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('sub', $user);
         $this->assertArrayHasKey('name', $user);
         $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('hd', $user);
         $this->assertArrayHasKey('picture', $user);
         $this->assertArrayHasKey('family_name', $user);
     }

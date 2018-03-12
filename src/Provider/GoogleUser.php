@@ -81,6 +81,23 @@ class GoogleUser implements ResourceOwnerInterface
     }
 
     /**
+     * Get hosted domain.
+     *
+     * @return string|null
+     */
+    public function getHostedDomain()
+    {
+        if (array_key_exists('hd', $this->response)) {
+            return $this->response['hd'];
+        }
+        if (array_key_exists('domain', $this->response)) {
+            return $this->response['domain'];
+        }
+
+        return null;
+    }
+
+    /**
      * Get avatar image URL.
      *
      * @return string|null
