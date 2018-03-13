@@ -7,37 +7,9 @@ namespace League\OAuth2\Client\Exception;
  */
 class HostedDomainException extends \Exception
 {
-    private $hostedDomainConfigured;
 
-    private $hostedDomainOfUser;
-
-    /**
-     * HostedDomainException constructor.
-     * @param string $hostedDomainConfigured
-     * @param string|null $hostedDomainOfUser
-     */
-    public function __construct($hostedDomainConfigured, $hostedDomainOfUser)
+    public static function notMatchingDomain($configuredDomain)
     {
-        parent::__construct("Hosted domain mismatch '$hostedDomainOfUser' !== '$hostedDomainConfigured'");
-        $this->hostedDomainConfigured = $hostedDomainConfigured;
-        $this->hostedDomainOfUser = $hostedDomainOfUser;
-    }
-
-    /**
-     * The hosted domain configured for this provider.
-     * @return string
-     */
-    public function getHostedDomainConfigured()
-    {
-        return $this->hostedDomainConfigured;
-    }
-
-    /**
-     * The hosted domain of the user. Non G-Suite users do not have hosted domains
-     * @return string|null
-     */
-    public function getHostedDomainOfUser()
-    {
-        return $this->hostedDomainOfUser;
+        return new static("User is not part of domain '$configuredDomain''");
     }
 }

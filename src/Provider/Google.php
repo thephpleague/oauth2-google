@@ -127,10 +127,10 @@ class Google extends AbstractProvider
         // Validate hosted domain incase the user edited the initial authorization code grant request
         if ($this->hostedDomain === '*') {
             if (empty($user->getHostedDomain())) {
-                throw new HostedDomainException($this->hostedDomain, $user->getHostedDomain());
+                throw HostedDomainException::notMatchingDomain($this->hostedDomain);
             }
         } elseif (!empty($this->hostedDomain) && $this->hostedDomain !== $user->getHostedDomain()) {
-            throw new HostedDomainException($this->hostedDomain, $user->getHostedDomain());
+            throw HostedDomainException::notMatchingDomain($this->hostedDomain);
         }
 
         return $user;
