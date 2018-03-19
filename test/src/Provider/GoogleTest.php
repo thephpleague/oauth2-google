@@ -64,6 +64,17 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('/plus/v1/people/me', $uri['path']);
         $this->assertNotContains('mock_access_token', $url);
+
+        parse_str($uri['query'], $query);
+        $fields = explode(',', $query['fields']);
+        // Default values
+        $this->assertContains('displayName', $fields);
+        $this->assertContains('emails/value', $fields);
+        $this->assertContains('image/url', $fields);
+
+        // Domain is conditionally added if hostedDomain is set
+        $this->assertContains('domain', $fields);
+
     }
 
     public function testResourceOwnerDetailsUrlCustomFields()
@@ -107,7 +118,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
     public function testUserData()
     {
         // Mock
-        $response = json_decode('{"emails": [{"value": "mock_email"}],"id": "12345","displayName": "mock_name","name": {"familyName": "mock_last_name","givenName": "mock_first_name"},"image": {"url": "mock_image_url"}}', true);
+        $response = json_decode('{"emails": [{"value": "mock_email"}],"id": "12345","displayName": "mock_name","name": {"familyName": "mock_last_name","givenName": "mock_first_name"},"image": {"url": "mock_image_url"}, "domain": "example.com"}', true);
 
         $token = $this->mockAccessToken();
 
@@ -130,6 +141,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mock_first_name', $user->getFirstName());
         $this->assertEquals('mock_last_name', $user->getLastName());
         $this->assertEquals('mock_email', $user->getEmail());
+        $this->assertEquals('example.com', $user->getHostedDomain());
         $this->assertEquals('mock_image_url', $user->getAvatar());
 
         $user = $user->toArray();
@@ -137,6 +149,7 @@ class GoogleTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('id', $user);
         $this->assertArrayHasKey('displayName', $user);
         $this->assertArrayHasKey('emails', $user);
+        $this->assertArrayHasKey('domain', $user);
         $this->assertArrayHasKey('image', $user);
         $this->assertArrayHasKey('name', $user);
     }
