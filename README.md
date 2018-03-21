@@ -46,7 +46,7 @@ $provider = new League\OAuth2\Client\Provider\Google([
     'clientId'     => '{google-app-id}',
     'clientSecret' => '{google-app-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
-    'hostedDomain' => 'example.com',
+    'hostedDomain' => 'example.com', // optional; used to restrict access to users on your G Suite/Google Apps for Business accounts
 ]);
 
 if (!empty($_GET['error'])) {
