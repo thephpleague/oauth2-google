@@ -10,6 +10,6 @@ class HostedDomainException extends \Exception
 
     public static function notMatchingDomain($configuredDomain)
     {
-        return new static("User is not part of domain '$configuredDomain''");
+        return new static("User is not part of domain '$configuredDomain'");
     }
 }
