@@ -7,8 +7,9 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
 
-class GoogleOIDCTest extends \PHPUnit_Framework_TestCase
+class GoogleOIDCTest extends TestCase
 {
 
     /**
