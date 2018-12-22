@@ -27,7 +27,4 @@ script:
   - composer run check
 
 after_script:
-  - |
-    if [ -f "build/logs/clover.xml" ]; then
-      vendor/bin/coveralls -v
-    fi
+  - if [ -f "build/logs/clover.xml" ]; then vendor/bin/php-coveralls; fi
