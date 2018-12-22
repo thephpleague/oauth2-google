@@ -20,20 +20,28 @@ a patch via pull request.
 
 The following versions of PHP are supported.
 
-* PHP 5.6
 * PHP 7.0
 * PHP 7.1
-* HHVM
+* PHP 7.2
+* PHP 7.3
 
-[Google Sign In](https://developers.google.com/identity/sign-in/web/sign-in) will also need to be set up, which will provide you with the `{google-app-id}` and `{google-app-secret}` required (see [Usage](#usage) below).
+This package uses [OpenID Connect][openid-connect] to authenticate users with
+Google accounts.
 
-If you're using the default [scopes](#scopes) then you'll also need to enable the [Google+ API](https://developers.google.com/+/web/api/rest/) for your project.
+To use this package, it will be necessary to have a Google client ID and client
+secret. These are referred to as `{google-client-id}` and `{google-client-secret}`
+in the documentation.
+
+Please follow the [Google instructions][oauth-setup] to create the required credentials.
+
+[openid-connect]: https://developers.google.com/identity/protocols/OpenIDConnect
+[oauth-setup]: https://developers.google.com/identity/protocols/OpenIDConnect#registeringyourapp
 
 ## Installation
 
 To install, use composer:
 
-```
+```sh
 composer require league/oauth2-google
 ```
 
@@ -42,9 +50,11 @@ composer require league/oauth2-google
 ### Authorization Code Flow
 
 ```php
-$provider = new League\OAuth2\Client\Provider\Google([
-    'clientId'     => '{google-app-id}',
-    'clientSecret' => '{google-app-secret}',
+use League\OAuth2\Client\Provider\Google;
+
+$provider = new Google([
+    'clientId'     => '{google-client-id}',
+    'clientSecret' => '{google-client-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
     'hostedDomain' => 'example.com', // optional; used to restrict access to users on your G Suite/Google Apps for Business accounts
 ]);
@@ -102,14 +112,48 @@ if (!empty($_GET['error'])) {
 }
 ```
 
+#### Available Options
+
+The `Google` provider has the following [options][auth-params]:
+
+- `accessType` to use online or offline access
+- `hostedDomain` to authenticate G Suite users
+- `prompt` to modify the prompt that the user will see
+- `scopes` to request access to additional user information
+
+[auth-params]: https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
+
+#### Accessing Token JWT
+
+Google provides a [JSON Web Token][jwt] (JWT) with all access tokens. This token
+[contains basic information][openid-jwt] about the authenticated user. The JWT
+can be accessed from the `id_token` value of the access token:
+
+```php
+/** @var League\OAuth2\Client\Token\AccessToken $token */
+$values = $token->getValues();
+
+/** @var string */
+$jwt = $values['id_token'];
+```
+
+Parsing the JWT will require a [JWT parser][jwt-parsers]. Refer to parser
+documentation for instructions.
+
+[jwt]: https://jwt.io/
+[openid-jwt]: https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
+[jwt-parsers]: https://packagist.org/search/?q=jwt
+
 ### Refreshing a Token
 
 Refresh tokens are only provided to applications which request offline access. You can specify offline access by setting the `accessType` option in your provider:
 
 ```php
-$provider = new League\OAuth2\Client\Provider\Google([
-    'clientId'     => '{google-app-id}',
-    'clientSecret' => '{google-app-secret}',
+use League\OAuth2\Client\Provider\Google;
+
+$provider = new Google([
+    'clientId'     => '{google-client-id}',
+    'clientSecret' => '{google-client-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
     'accessType'   => 'offline',
 ]);
@@ -135,43 +179,46 @@ $authUrl = $provider->getAuthorizationUrl(['approval_prompt' => 'force']);
 Now you have everything you need to refresh an access token using a refresh token:
 
 ```php
-$provider = new League\OAuth2\Client\Provider\Google([
-    'clientId'     => '{google-app-id}',
-    'clientSecret' => '{google-app-secret}',
+use League\OAuth2\Client\Provider\Google;
+use League\OAuth2\Client\Grant\RefreshToken;
+
+$provider = new Google([
+    'clientId'     => '{google-client-id}',
+    'clientSecret' => '{google-client-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
 ]);
 
-$grant = new League\OAuth2\Client\Grant\RefreshToken();
+$grant = new RefreshToken();
 $token = $provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 ```
-## Resource Owner Attributes
-
-By default the Google plus API is used to load profile information. If you want to use the OpenIDConnect
-user info endpoint to load profile information then add `useOidcMode => true` to your configuration.
-
-The two endpoints provide attributes with different names and structures. The `GoogleUser` class hides
-these differences for the most common attributes.
 
 ## Scopes
 
-If needed, you can include an array of scopes when getting the authorization url. Example:
+Additional [scopes][scopes] can be set by using the `scope` parameter when
+generating the authorization URL:
 
-```
+```php
 $authorizationUrl = $provider->getAuthorizationUrl([
     'scope' => [
-        'https://www.googleapis.com/auth/drive',
-    ]
+        'scope-url-here'
+    ],
 ]);
-header('Location: ' . $authorizationUrl);
-exit;
 ```
 
-Note that the default scopes include `email` and `profile`, which require that the [Google+ API](https://developers.google.com/+/web/api/rest/) is enabled for your project.
+[scopes]: https://developers.google.com/identity/protocols/googlescopes
 
 ## Testing
 
-``` bash
-$ ./vendor/bin/phpunit
+Tests can be run with:
+
+```sh
+composer test
+```
+
+Style checks can be run with:
+
+```sh
+composer check
 ```
 
 ## Contributing

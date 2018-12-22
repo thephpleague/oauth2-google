@@ -12,46 +12,33 @@ class Google extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
-    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'id';
-
     /**
      * @var string If set, this will be sent to google as the "access_type" parameter.
-     * @link https://developers.google.com/accounts/docs/OAuth2WebServer#offline
+     * @link https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
      */
     protected $accessType;
 
     /**
      * @var string If set, this will be sent to google as the "hd" parameter.
-     * @link https://developers.google.com/accounts/docs/OAuth2Login#hd-param
+     * @link https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
      */
     protected $hostedDomain;
 
     /**
-     * @var array Default fields to be requested from the user profile.
-     * @link https://developers.google.com/+/web/api/rest/latest/people
+     * @var string If set, this will be sent to google as the "prompt" parameter.
+     * @link https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
      */
-    protected $defaultUserFields = [
-        'id',
-        'name(familyName,givenName)',
-        'displayName',
-        'emails/value',
-        'image/url',
-    ];
-    /**
-     * @var array Additional fields to be requested from the user profile.
-     *            If set, these values will be included with the defaults.
-     */
-    protected $userFields = [];
+    protected $prompt;
 
     /**
-     * Use OpenID Connect endpoints for getting the user info/resource owner
-     * @var bool
+     * @var array List of scopes that will be used for authentication.
+     * @link https://developers.google.com/identity/protocols/googlescopes
      */
-    protected $useOidcMode = false;
+    protected $scopes = [];
 
     public function getBaseAuthorizationUrl()
     {
-        return 'https://accounts.google.com/o/oauth2/auth';
+        return 'https://accounts.google.com/o/oauth2/v2/auth';
     }
 
     public function getBaseAccessTokenUrl(array $params)
@@ -61,42 +48,42 @@ class Google extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        if ($this->useOidcMode) {
-            // OIDC endpoints can be found https://accounts.google.com/.well-known/openid-configuration
-            return 'https://www.googleapis.com/oauth2/v3/userinfo';
-        }
-        // fields that are required based on other configuration options
-        $configurationUserFields = [];
-        if (isset($this->hostedDomain)) {
-            $configurationUserFields[] = 'domain';
-        }
-        $fields = array_merge($this->defaultUserFields, $this->userFields, $configurationUserFields);
-        return 'https://www.googleapis.com/plus/v1/people/me?' . http_build_query([
-            'fields' => implode(',', $fields),
-            'alt'    => 'json',
-        ]);
+        return 'https://openidconnect.googleapis.com/v1/userinfo';
     }
 
     protected function getAuthorizationParameters(array $options)
     {
-        $params = array_merge(
-            parent::getAuthorizationParameters($options),
-            array_filter([
-                'hd'          => $this->hostedDomain,
-                'access_type' => $this->accessType,
-                // if the user is logged in with more than one account ask which one to use for the login!
-                'authuser'    => '-1'
-            ])
-        );
+        if (empty($options['hd']) && $this->hostedDomain) {
+            $options['hd'] = $this->hostedDomain;
+        }
 
-        return $params;
+        if (empty($options['access_type']) && $this->accessType) {
+            $options['access_type'] = $this->accessType;
+        }
+
+        if (empty($options['prompt']) && $this->prompt) {
+            $options['prompt'] = $this->prompt;
+        }
+
+        // Default scopes MUST be included for OpenID Connect.
+        // Additional scopes MAY be added by constructor or option.
+        $scopes = array_merge($this->getDefaultScopes(), $this->scopes);
+
+        if (!empty($options['scope'])) {
+            $scopes = array_merge($scopes, $options['scope']);
+        }
+
+        $options['scope'] = array_unique($scopes);
+
+        return parent::getAuthorizationParameters($options);
     }
 
     protected function getDefaultScopes()
     {
+        // "openid" MUST be the first scope in the list.
         return [
-            'email',
             'openid',
+            'email',
             'profile',
         ];
     }
@@ -108,31 +95,52 @@ class Google extends AbstractProvider
 
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        if (!empty($data['error'])) {
-            $code  = 0;
-            $error = $data['error'];
-
-            if (is_array($error)) {
-                $code  = $error['code'];
-                $error = $error['message'];
-            }
-
-            throw new IdentityProviderException($error, $code, $data);
+        // @codeCoverageIgnoreStart
+        if (empty($data['error'])) {
+            return;
         }
+        // @codeCoverageIgnoreEnd
+
+        $code  = 0;
+        $error = $data['error'];
+
+        if (is_array($error)) {
+            $code  = $error['code'];
+            $error = $error['message'];
+        }
+
+        throw new IdentityProviderException($error, $code, $data);
     }
 
     protected function createResourceOwner(array $response, AccessToken $token)
     {
         $user = new GoogleUser($response);
-        // Validate hosted domain incase the user edited the initial authorization code grant request
-        if ($this->hostedDomain === '*') {
-            if (empty($user->getHostedDomain())) {
-                throw HostedDomainException::notMatchingDomain($this->hostedDomain);
-            }
-        } elseif (!empty($this->hostedDomain) && $this->hostedDomain !== $user->getHostedDomain()) {
-            throw HostedDomainException::notMatchingDomain($this->hostedDomain);
-        }
+
+        $this->assertMatchingDomain($user->getHostedDomain());
 
         return $user;
+    }
+
+    /**
+     * @throws HostedDomainException If the domain does not match the configured domain.
+     */
+    protected function assertMatchingDomain($hostedDomain)
+    {
+        if ($this->hostedDomain === null) {
+            // No hosted domain configured.
+            return;
+        }
+
+        if ($this->hostedDomain === '*' && $hostedDomain) {
+            // Any hosted domain is allowed.
+            return;
+        }
+
+        if ($this->hostedDomain === $hostedDomain) {
+            // Hosted domain is correct.
+            return;
+        }
+
+        throw HostedDomainException::notMatchingDomain($this->hostedDomain);
     }
 }
