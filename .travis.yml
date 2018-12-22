@@ -1,7 +1,5 @@
 language: php
 
-sudo: false
-
 cache:
   directories:
     - vendor
@@ -10,16 +8,15 @@ cache:
 env: MINIMUM_VERSIONS=false
 
 php:
-  - 5.6
-  - 7.0
   - 7.1
+  - 7.2
+  - 7.3
+
 
 matrix:
   include:
-    - php: 5.6
+    - php: 7.1
       env: MINIMUM_VERSIONS=true
-    - php: hhvm
-      dist: trusty
 
 install:
   - if [[ $MINIMUM_VERSIONS = false ]]; then composer install; fi
@@ -30,7 +27,4 @@ script:
   - composer run check
 
 after_script:
-  - |
-    if [ -f "build/logs/clover.xml" ]; then
-      vendor/bin/coveralls -v
-    fi
+  - if [ -f "build/logs/clover.xml" ]; then vendor/bin/php-coveralls; fi

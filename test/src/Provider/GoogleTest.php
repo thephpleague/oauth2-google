@@ -6,8 +6,9 @@ use Eloquent\Phony\Phpunit\Phony;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
 
-class GoogleTest extends \PHPUnit_Framework_TestCase
+class GoogleTest extends TestCase
 {
     protected $provider;
 

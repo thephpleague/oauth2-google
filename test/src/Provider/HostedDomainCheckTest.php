@@ -8,8 +8,9 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
 
-class HostedDomainCheckTest extends \PHPUnit_Framework_TestCase
+class HostedDomainCheckTest extends TestCase
 {
 
     /**
@@ -42,10 +43,10 @@ class HostedDomainCheckTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
         $this->assertEquals($expectedHostedDomain, $user->getHostedDomain());
-
     }
 
-    public function validHostedDomainProvider() {
+    public function validHostedDomainProvider()
+    {
         // Any domain or no domain is allowed if not specified
         $noHostedDomainConfig = [];
         // Any domain is allowed if set to * (but it must be set.)
@@ -86,7 +87,8 @@ class HostedDomainCheckTest extends \PHPUnit_Framework_TestCase
         $google->getResourceOwner($token);
     }
 
-    public function invalidHostedDomainProvider() {
+    public function invalidHostedDomainProvider()
+    {
         // Wildcard requires a domain. No domain implies gmail
         $wildCardHostedDomain = [['hostedDomain' => '*']];
         // Matching domain is allowed
