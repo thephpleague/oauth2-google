@@ -14,6 +14,7 @@ OAuth 2.0 Google Provider Changelog
 
 ### Added
 
+- Add "locale" to user details, #60
 - Support additional scopes at construction
 
 ### Removed

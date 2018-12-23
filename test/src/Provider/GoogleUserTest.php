@@ -18,12 +18,14 @@ class GoogleUserTest extends TestCase
             'family_name' => 'name',
             'picture' => 'mock_image_url',
             'hd' => 'example.com',
+            'locale' => 'en',
         ]);
 
         $this->assertEquals(12345, $user->getId());
         $this->assertEquals('mock name', $user->getName());
         $this->assertEquals('mock', $user->getFirstName());
         $this->assertEquals('name', $user->getLastName());
+        $this->assertEquals('en', $user->getLocale());
         $this->assertEquals('mock.name@example.com', $user->getEmail());
         $this->assertEquals('example.com', $user->getHostedDomain());
         $this->assertEquals('mock_image_url', $user->getAvatar());
@@ -41,5 +43,6 @@ class GoogleUserTest extends TestCase
         $this->assertEquals(null, $user->getEmail());
         $this->assertEquals(null, $user->getHostedDomain());
         $this->assertEquals(null, $user->getAvatar());
+        $this->assertEquals(null, $user->getLocale());
     }
 }
