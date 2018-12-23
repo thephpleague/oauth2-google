@@ -1,6 +1,6 @@
 OAuth 2.0 Google Provider Changelog
 
-## 3.0.0 - ???
+## 3.0.0 - 2018-12-23
 
 ### Changed
 
