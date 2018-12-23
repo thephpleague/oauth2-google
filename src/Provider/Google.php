@@ -63,6 +63,9 @@ class Google extends AbstractProvider
 
         if (empty($options['prompt']) && $this->prompt) {
             $options['prompt'] = $this->prompt;
+
+            // The "approval_prompt" option MUST be removed to prevent conflicts.
+            $options['approval_prompt'] = null;
         }
 
         // Default scopes MUST be included for OpenID Connect.
