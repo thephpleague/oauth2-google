@@ -53,6 +53,19 @@ class GoogleUser implements ResourceOwnerInterface
     }
 
     /**
+     * Get locale.
+     *
+     * @return string|null
+     */
+    public function getLocale()
+    {
+        if (array_key_exists('locale', $this->response)) {
+            return $this->response['locale'];
+        }
+        return null;
+    }
+
+    /**
      * Get email address.
      *
      * @return string|null
