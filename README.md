@@ -107,7 +107,7 @@ if (!empty($_GET['error'])) {
     // Use this to get a new access token if the old one expires
     echo $token->getRefreshToken();
 
-    // Number of seconds until the access token will expire, and need refreshing
+    // Unix timestamp at which the access token expires
     echo $token->getExpires();
 }
 ```

@@ -33,7 +33,7 @@ echo "Token is: <tt>", $token->getToken(), "</tt><br/>";
 echo "Refresh token is: <tt>", $token->getRefreshToken(), "</tt><br/>";
 
 // Number of seconds until the access token will expire, and need refreshing
-echo "Expires in ", $token->getExpires(), " seconds <br/>";
+echo "Expires at ", date('r', $token->getExpires()), "<br/>";
 
 // Allow the user to logout
 echo '<a href="?logout=1">Logout</a><br/>';
