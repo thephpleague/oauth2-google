@@ -56,12 +56,8 @@ class HostedDomainCheckTest extends TestCase
         return [
             [ $noHostedDomainConfig, '{"email": "mock_email"}', null],
             [ $noHostedDomainConfig, '{"email": "mock_email", "hd": "anything.example"}', "anything.example"],
-            [ $noHostedDomainConfig, '{"email": "mock_email", "domain": "anything.example"}', "anything.example"],
             [ $wildCardHostedDomain, '{"email": "mock_email", "hd": "anything.example"}', "anything.example"],
-            [ $wildCardHostedDomain, '{"email": "mock_email", "domain": "anything.example"}', "anything.example"],
             [ $hostedDomainConfig, '{"email": "mock_email", "hd": "example.com"}', "example.com"],
-            [ $hostedDomainConfig, '{"email": "mock_email", "domain": "example.com"}', "example.com"],
-
         ];
     }
 
@@ -99,8 +95,6 @@ class HostedDomainCheckTest extends TestCase
             // A domain is required for specific domains
             [ $hostedDomainConfig, '{"email": "mock_email"}', null],
             [ $hostedDomainConfig, '{"email": "mock_email", "hd": "wrong.example.com"}'],
-            [ $hostedDomainConfig, '{"email": "mock_email", "domain": "example.co"}'],
-
         ];
     }
 

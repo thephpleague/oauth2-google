@@ -5,11 +5,13 @@ namespace League\OAuth2\Client\Test\Provider;
 use Eloquent\Phony\Phpunit\Phony;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
+use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 
 class GoogleTest extends TestCase
 {
+    /** @var GoogleProvider */
     protected $provider;
 
     protected function setUp()
@@ -19,7 +21,8 @@ class GoogleTest extends TestCase
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
             'hostedDomain' => 'mock_domain',
-            'accessType' => 'mock_access_type'
+            'accessType' => 'mock_access_type',
+            'prompt' => 'select_account',
         ]);
     }
 
@@ -37,9 +40,11 @@ class GoogleTest extends TestCase
         $this->assertArrayHasKey('approval_prompt', $query);
         $this->assertArrayHasKey('hd', $query);
         $this->assertArrayHasKey('access_type', $query);
+        $this->assertArrayHasKey('prompt', $query);
 
         $this->assertEquals('mock_access_type', $query['access_type']);
         $this->assertEquals('mock_domain', $query['hd']);
+        $this->assertEquals('select_account', $query['prompt']);
 
         $this->assertContains('email', $query['scope']);
         $this->assertContains('profile', $query['scope']);
@@ -56,70 +61,30 @@ class GoogleTest extends TestCase
         $this->assertEquals('/oauth2/v4/token', $uri['path']);
     }
 
+    /**
+     * @link https://accounts.google.com/.well-known/openid-configuration
+     */
     public function testResourceOwnerDetailsUrl()
     {
         $token = $this->mockAccessToken();
 
         $url = $this->provider->getResourceOwnerDetailsUrl($token);
-        $uri = parse_url($url);
 
-        $this->assertEquals('/plus/v1/people/me', $uri['path']);
-        $this->assertNotContains('mock_access_token', $url);
-
-        parse_str($uri['query'], $query);
-        $fields = explode(',', $query['fields']);
-        // Default values
-        $this->assertContains('displayName', $fields);
-        $this->assertContains('emails/value', $fields);
-        $this->assertContains('image/url', $fields);
-
-        // Domain is conditionally added if hostedDomain is set
-        $this->assertContains('domain', $fields);
-
-    }
-
-    public function testResourceOwnerDetailsUrlCustomFields()
-    {
-        $provider = new GoogleProvider([
-            'clientId' => 'mock_client_id',
-            'clientSecret' => 'mock_secret',
-            'redirectUri' => 'none',
-            'userFields' => [
-                'domain',
-                'gender',
-                'verified',
-            ],
-        ]);
-
-        $token = $this->mockAccessToken();
-
-        $url = $provider->getResourceOwnerDetailsUrl($token);
-        $uri = parse_url($url);
-        parse_str($uri['query'], $query);
-
-        $this->assertArrayHasKey('fields', $query);
-        $this->assertArrayHasKey('alt', $query);
-
-        // Always JSON for consistency
-        $this->assertEquals('json', $query['alt']);
-
-        $fields = explode(',', $query['fields']);
-
-        // Default values
-        $this->assertContains('displayName', $fields);
-        $this->assertContains('emails/value', $fields);
-        $this->assertContains('image/url', $fields);
-
-        // Configured values
-        $this->assertContains('domain', $fields);
-        $this->assertContains('gender', $fields);
-        $this->assertContains('verified', $fields);
+        $this->assertEquals('https://openidconnect.googleapis.com/v1/userinfo', $url);
     }
 
     public function testUserData()
     {
         // Mock
-        $response = json_decode('{"emails": [{"value": "mock_email"}],"id": "12345","displayName": "mock_name","name": {"familyName": "mock_last_name","givenName": "mock_first_name"},"image": {"url": "mock_image_url"}, "domain": "example.com"}', true);
+        $response = [
+            'sub' => '12345',
+            'email' => 'mock.name@example.com',
+            'name' => 'mock name',
+            'given_name' => 'mock',
+            'family_name' => 'name',
+            'picture' => 'mock_image_url',
+            'hd' => 'example.com',
+        ];
 
         $token = $this->mockAccessToken();
 
@@ -138,21 +103,21 @@ class GoogleTest extends TestCase
         $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
 
         $this->assertEquals(12345, $user->getId());
-        $this->assertEquals('mock_name', $user->getName());
-        $this->assertEquals('mock_first_name', $user->getFirstName());
-        $this->assertEquals('mock_last_name', $user->getLastName());
-        $this->assertEquals('mock_email', $user->getEmail());
+        $this->assertEquals('mock name', $user->getName());
+        $this->assertEquals('mock', $user->getFirstName());
+        $this->assertEquals('name', $user->getLastName());
+        $this->assertEquals('mock.name@example.com', $user->getEmail());
         $this->assertEquals('example.com', $user->getHostedDomain());
         $this->assertEquals('mock_image_url', $user->getAvatar());
 
         $user = $user->toArray();
 
-        $this->assertArrayHasKey('id', $user);
-        $this->assertArrayHasKey('displayName', $user);
-        $this->assertArrayHasKey('emails', $user);
-        $this->assertArrayHasKey('domain', $user);
-        $this->assertArrayHasKey('image', $user);
+        $this->assertArrayHasKey('sub', $user);
         $this->assertArrayHasKey('name', $user);
+        $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('hd', $user);
+        $this->assertArrayHasKey('picture', $user);
+        $this->assertArrayHasKey('family_name', $user);
     }
 
     public function testErrorResponse()

@@ -1,5 +1,24 @@
 OAuth 2.0 Google Provider Changelog
 
+## 3.0.0 - ???
+
+### Changed
+
+- Update to latest version of Google OAuth
+- Use only OpenID Connect for user details
+
+### Fixed
+
+- Correct handling of selecting from multiple user accounts, #45
+
+### Added
+
+- Support additional scopes at construction
+
+### Removed
+
+- Dropped support for Google+ user details, #34 and #63
+
 ## 2.2.0 - 2018-03-19
 
 ### Added
