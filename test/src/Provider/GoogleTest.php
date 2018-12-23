@@ -37,7 +37,7 @@ class GoogleTest extends TestCase
         $this->assertArrayHasKey('state', $query);
         $this->assertArrayHasKey('scope', $query);
         $this->assertArrayHasKey('response_type', $query);
-        $this->assertArrayHasKey('approval_prompt', $query);
+        $this->assertArrayNotHasKey('approval_prompt', $query);
         $this->assertArrayHasKey('hd', $query);
         $this->assertArrayHasKey('access_type', $query);
         $this->assertArrayHasKey('prompt', $query);

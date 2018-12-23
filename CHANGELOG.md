@@ -10,6 +10,7 @@ OAuth 2.0 Google Provider Changelog
 ### Fixed
 
 - Correct handling of selecting from multiple user accounts, #45
+- Prevent conflict when using prompt option, #42
 
 ### Added
 
