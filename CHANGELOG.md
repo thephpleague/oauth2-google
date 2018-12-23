@@ -1,0 +1,27 @@
+OAuth 2.0 Google Provider Changelog
+
+## 2.2.0 - 2018-03-19
+
+### Added
+
+- Hosted domain validation, #54 by @pradtke
+
+## 2.1.0 - 2018-03-09
+
+### Added
+
+- OpenID Connect support, #48 by @pradtke
+
+## 2.0.0 - 2017-01-24
+
+### Added
+
+- PHP 7.1 support
+
+### Removed
+
+- Dropped PHP 5.5 support
+
+## 1.0.0 - 2015-08-12
+
+- Initial release
