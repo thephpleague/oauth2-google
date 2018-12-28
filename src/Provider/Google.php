@@ -63,8 +63,10 @@ class Google extends AbstractProvider
 
         if (empty($options['prompt']) && $this->prompt) {
             $options['prompt'] = $this->prompt;
+        }
 
-            // The "approval_prompt" option MUST be removed to prevent conflicts.
+        // The "approval_prompt" option MUST be removed to prevent conflicts with non-empty "prompt".
+        if (!empty($options['prompt'])) {
             $options['approval_prompt'] = null;
         }
 
@@ -104,11 +106,11 @@ class Google extends AbstractProvider
         }
         // @codeCoverageIgnoreEnd
 
-        $code  = 0;
+        $code = 0;
         $error = $data['error'];
 
         if (is_array($error)) {
-            $code  = $error['code'];
+            $code = $error['code'];
             $error = $error['message'];
         }
 
