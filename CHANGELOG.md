@@ -1,5 +1,11 @@
 OAuth 2.0 Google Provider Changelog
 
+## 3.0.1 - 2018-12-28
+
+### Fixed
+
+- Correct conflict handling for prompt option, #69 by @mxdpeep
+
 ## 3.0.0 - 2018-12-23
 
 ### Changed
