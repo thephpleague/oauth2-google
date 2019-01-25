@@ -170,10 +170,10 @@ $token = $provider->getAccessToken('authorization_code', [
 $refreshToken = $token->getRefreshToken();
 ```
 
-If you ever need to get a new refresh token you can request one by forcing the approval prompt:
+If you ever need to get a new refresh token you can request one by forcing the consent prompt:
 
 ```php
-$authUrl = $provider->getAuthorizationUrl(['approval_prompt' => 'force']);
+$authUrl = $provider->getAuthorizationUrl(['prompt' => 'consent']);
 ```
 
 Now you have everything you need to refresh an access token using a refresh token:
