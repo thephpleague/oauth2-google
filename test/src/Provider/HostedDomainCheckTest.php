@@ -53,11 +53,21 @@ class HostedDomainCheckTest extends TestCase
         $wildCardHostedDomain = [['hostedDomain' => '*']];
         // Matching domain is allowed
         $hostedDomainConfig = [['hostedDomain' => 'example.com']];
+        // Multiple domains is allowed
+        $multipleDomainsConfig = [['hostedDomain' => 'example.com,example.bar']];
+        // Multiple empty domains are like allowing any domain
+        $multipleEmptyDomainsConfig = [['hostedDomain' => ',']];
+        // One domain contains a regexp
+        $regexpDomainsConfig = [['hostedDomain' => 'example.(org|com)']];
+
         return [
             [ $noHostedDomainConfig, '{"email": "mock_email"}', null],
             [ $noHostedDomainConfig, '{"email": "mock_email", "hd": "anything.example"}', "anything.example"],
             [ $wildCardHostedDomain, '{"email": "mock_email", "hd": "anything.example"}', "anything.example"],
             [ $hostedDomainConfig, '{"email": "mock_email", "hd": "example.com"}', "example.com"],
+            [ $multipleDomainsConfig, '{"email": "mock_email", "hd": "example.com"}', "example.com"],
+            [ $multipleEmptyDomainsConfig, '{"email": "mock_email", "hd": "example.com"}', "example.com"],
+            [ $regexpDomainsConfig, '{"email": "mock_email", "hd": "example.com"}', "example.com"],
         ];
     }
 
@@ -89,12 +99,19 @@ class HostedDomainCheckTest extends TestCase
         $wildCardHostedDomain = [['hostedDomain' => '*']];
         // Matching domain is allowed
         $hostedDomainConfig = [['hostedDomain' => 'example.com']];
+        // No matching domains using regexp
+        $multipleDomainsConfig = [['hostedDomain' => 'example.(bar|baz),example.(foo),example.co']];
+        // Error regexp
+        $errorRegexp = [['hostedDomain' => 'example.com(']];
+
         return [
             // A domain is required for wild cards
             [ $wildCardHostedDomain, '{"email": "mock_email"}', null],
             // A domain is required for specific domains
             [ $hostedDomainConfig, '{"email": "mock_email"}', null],
             [ $hostedDomainConfig, '{"email": "mock_email", "hd": "wrong.example.com"}'],
+            [ $multipleDomainsConfig, '{"email": "mock_email", "hd": "example.com"}', null],
+            [ $errorRegexp, '{"email": "mock_email", "hd": "example.com"}', null],
         ];
     }
 

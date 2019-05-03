@@ -19,7 +19,8 @@ class Google extends AbstractProvider
     protected $accessType;
 
     /**
-     * @var string If set, this will be sent to google as the "hd" parameter.
+     * @var string Comma-separated list of domains or domain regular expressions.
+     *             If only one regular value is passed, it will be sent to google as the "hd" parameter.
      * @link https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
      */
     protected $hostedDomain;
@@ -53,7 +54,7 @@ class Google extends AbstractProvider
 
     protected function getAuthorizationParameters(array $options)
     {
-        if (empty($options['hd']) && $this->hostedDomain) {
+        if (empty($options['hd']) && $this->hostedDomain && !$this->multipleDomains()) {
             $options['hd'] = $this->hostedDomain;
         }
 
@@ -121,31 +122,62 @@ class Google extends AbstractProvider
     {
         $user = new GoogleUser($response);
 
-        $this->assertMatchingDomain($user->getHostedDomain());
+        $this->assertMatchingDomains($user->getHostedDomain());
 
         return $user;
+    }
+
+    protected static function isDomainExpression($str) {
+        return preg_match('/[\(\|\*]/', $str) && !preg_match('!/!', $str);
+    }
+
+    protected function multipleDomains() {
+        return strpos($this->hostedDomain, ',') !== FALSE || self::isDomainExpression($this->hostedDomain);
     }
 
     /**
      * @throws HostedDomainException If the domain does not match the configured domain.
      */
-    protected function assertMatchingDomain($hostedDomain)
+    protected function assertMatchingDomains($hostedDomain)
     {
         if ($this->hostedDomain === null) {
             // No hosted domain configured.
             return;
         }
 
-        if ($this->hostedDomain === '*' && $hostedDomain) {
-            // Any hosted domain is allowed.
+        $domains = array_filter(explode(',', $this->hostedDomain));
+        if (! $domains) {
+            // No hosted domains configured.
             return;
         }
 
-        if ($this->hostedDomain === $hostedDomain) {
-            // Hosted domain is correct.
-            return;
+        foreach ($domains as $whiteListedDomain) {
+            if ($this->assertMatchingDomain($whiteListedDomain, $hostedDomain)) {
+                return;
+            }
         }
 
         throw HostedDomainException::notMatchingDomain($this->hostedDomain);
+    }
+
+    /**
+     * @return bool Whether user-originating domain equals or matches $reference.
+     */
+    protected function assertMatchingDomain($reference, $hostedDomain)
+    {
+        if ($reference === '*' && $hostedDomain) {
+            // Any hosted domain is allowed.
+            return true;
+        }
+
+        if ($reference === $hostedDomain) {
+            // Hosted domain is correct.
+            return true;
+        }
+
+        if (self::isDomainExpression($reference) && @preg_match('/' . $reference . '/', $hostedDomain)) {
+            // Hosted domain is correct.
+            return true;
+        }
     }
 }
