@@ -54,7 +54,7 @@ class Google extends AbstractProvider
 
     protected function getAuthorizationParameters(array $options)
     {
-        if (empty($options['hd']) && $this->hostedDomain && !$this->multipleDomains()) {
+        if (empty($options['hd']) && $this->hostedDomain && !$this->isHostedDomainMultiple()) {
             $options['hd'] = $this->hostedDomain;
         }
 
@@ -127,12 +127,14 @@ class Google extends AbstractProvider
         return $user;
     }
 
-    protected static function isDomainExpression($str) {
+    protected function isDomainExpression($str)
+    {
         return preg_match('/[\(\|\*]/', $str) && !preg_match('!/!', $str);
     }
 
-    protected function multipleDomains() {
-        return strpos($this->hostedDomain, ',') !== FALSE || self::isDomainExpression($this->hostedDomain);
+    protected function isHostedDomainMultiple()
+    {
+        return strpos($this->hostedDomain, ',') !== FALSE || $this->isDomainExpression($this->hostedDomain);
     }
 
     /**
@@ -146,7 +148,7 @@ class Google extends AbstractProvider
         }
 
         $domains = array_filter(explode(',', $this->hostedDomain));
-        if (! $domains) {
+        if (empty($domains)) {
             // No hosted domains configured.
             return;
         }
@@ -175,7 +177,7 @@ class Google extends AbstractProvider
             return true;
         }
 
-        if (self::isDomainExpression($reference) && @preg_match('/' . $reference . '/', $hostedDomain)) {
+        if ($this->isDomainExpression($reference) && @preg_match('/' . $reference . '/', $hostedDomain)) {
             // Hosted domain is correct.
             return true;
         }
