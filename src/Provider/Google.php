@@ -19,8 +19,10 @@ class Google extends AbstractProvider
     protected $accessType;
 
     /**
-     * @var string Comma-separated list of domains or domain regular expressions.
-     *             If only one regular value is passed, it will be sent to google as the "hd" parameter.
+     * @var string If set, this will be sent to google as the "hd" parameter.
+     *             Extra-feature: Also accept a comma-separated list of domains or domain regular expressions.
+     *             In that case, Google connection screen is not bound to a specific hosted domain
+      *            because no "hd" parameter is sent to Google, but domain matching is still done by this library.
      * @link https://developers.google.com/identity/protocols/OpenIDConnect#authenticationuriparameters
      */
     protected $hostedDomain;
