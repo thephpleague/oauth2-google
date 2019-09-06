@@ -50,9 +50,12 @@ composer require league/oauth2-google
 ### Authorization Code Flow
 
 ```php
-use League\OAuth2\Client\Provider\Google;
+            //use League\OAuth2\Client\Provider\Google;
+session_start();
+require 'vendor/autoload.php';
 
-$provider = new Google([
+               //$provider = new Google([
+$provider = new League\OAuth2\Client\Provider\Google([
     'clientId'     => '{google-client-id}',
     'clientSecret' => '{google-client-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
