@@ -45,4 +45,19 @@ class GoogleUserTest extends TestCase
         $this->assertEquals(null, $user->getAvatar());
         $this->assertEquals(null, $user->getLocale());
     }
+
+    public function testUserMinimalData()
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+        ]);
+
+        $this->assertEquals(null, $user->getEmail());
+        $this->assertEquals(null, $user->getHostedDomain());
+        $this->assertEquals(null, $user->getAvatar());
+        $this->assertEquals(null, $user->getLocale());
+        $this->assertEquals(null, $user->getFirstName());
+        $this->assertEquals(null, $user->getLastName());
+    }
 }
