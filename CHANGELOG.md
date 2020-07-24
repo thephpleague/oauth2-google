@@ -1,5 +1,11 @@
 OAuth 2.0 Google Provider Changelog
 
+## 3.0.3 - 2020-07-24
+
+### Fixed
+
+- Remove the `approval_prompt` from default parameters, #90
+
 ## 3.0.2 - 2019-11-16
 
 ### Fixed
