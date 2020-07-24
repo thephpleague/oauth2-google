@@ -16,7 +16,7 @@ class GooglePromptTest extends TestCase
 
         $params = $this->getQueryParams($provider->getAuthorizationUrl());
 
-        $this->assertArrayHasKey('approval_prompt', $params);
+        $this->assertArrayNotHasKey('approval_prompt', $params);
     }
 
     public function testPromptParameters()
