@@ -65,11 +65,6 @@ class Google extends AbstractProvider
             $options['prompt'] = $this->prompt;
         }
 
-        // The "approval_prompt" option MUST be removed to prevent conflicts with non-empty "prompt".
-        if (!empty($options['prompt'])) {
-            $options['approval_prompt'] = null;
-        }
-
         // Default scopes MUST be included for OpenID Connect.
         // Additional scopes MAY be added by constructor or option.
         $scopes = array_merge($this->getDefaultScopes(), $this->scopes);
@@ -80,7 +75,13 @@ class Google extends AbstractProvider
 
         $options['scope'] = array_unique($scopes);
 
-        return parent::getAuthorizationParameters($options);
+        $options = parent::getAuthorizationParameters($options);
+
+        // The "approval_prompt" MUST be removed as it is not supported by Google, use "prompt" instead:
+        // https://developers.google.com/identity/protocols/oauth2/openid-connect#prompt
+        unset($options['approval_prompt']);
+
+        return $options;
     }
 
     protected function getDefaultScopes()
