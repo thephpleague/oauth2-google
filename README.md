@@ -51,7 +51,11 @@ composer require league/oauth2-google
 ### Authorization Code Flow
 
 ```php
+require __DIR__ . '/vendor/autoload.php';
+
 use League\OAuth2\Client\Provider\Google;
+
+session_start(); // Remove if session.auto_start=1 in php.ini
 
 $provider = new Google([
     'clientId'     => '{google-client-id}',
