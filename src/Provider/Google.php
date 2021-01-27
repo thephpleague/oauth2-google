@@ -43,7 +43,7 @@ class Google extends AbstractProvider
 
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://www.googleapis.com/oauth2/v4/token';
+        return 'https://oauth2.googleapis.com/token';
     }
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)

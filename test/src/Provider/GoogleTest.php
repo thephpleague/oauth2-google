@@ -57,7 +57,7 @@ class GoogleTest extends TestCase
         $url = $this->provider->getBaseAccessTokenUrl([]);
         $uri = parse_url($url);
 
-        $this->assertEquals('/oauth2/v4/token', $uri['path']);
+        $this->assertEquals('/token', $uri['path']);
     }
 
     /**
