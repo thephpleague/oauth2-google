@@ -25,7 +25,7 @@
         "eloquent/phony-phpunit": "^2.0",
         "phpunit/phpunit": "^6.0",
         "php-coveralls/php-coveralls": "^2.1",
-        "squizlabs/php_codesniffer": "^2.0"
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -39,6 +39,6 @@
     },
     "scripts": {
         "test": "phpunit",
-        "check": "phpcs src --standard=psr2 -sp"
+        "check": "phpcs src test --standard=PSR12 -sp"
     }
 }
