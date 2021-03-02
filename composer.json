@@ -19,7 +19,6 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.1",
         "league/oauth2-client": "^2.0"
     },
     "require-dev": {
