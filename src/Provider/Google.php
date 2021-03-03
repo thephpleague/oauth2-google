@@ -128,9 +128,11 @@ class Google extends AbstractProvider
     }
 
     /**
+     * @param string|null $hostedDomain
+     *
      * @throws HostedDomainException If the domain does not match the configured domain.
      */
-    protected function assertMatchingDomain($hostedDomain): void
+    protected function assertMatchingDomain(?string $hostedDomain): void
     {
         if ($this->hostedDomain === null) {
             // No hosted domain configured.

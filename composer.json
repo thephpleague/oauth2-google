@@ -24,7 +24,6 @@
     "require-dev": {
         "eloquent/phony-phpunit": "^6.0",
         "phpunit/phpunit": "^8.0",
-        "php-coveralls/php-coveralls": "^2.1",
         "squizlabs/php_codesniffer": "^3.0"
     },
     "autoload": {
@@ -38,7 +37,6 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
         "check": "phpcs src test --standard=PSR12 -sp"
     }
 }

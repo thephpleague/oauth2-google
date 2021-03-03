@@ -18,16 +18,12 @@ class HostedDomainCheckTest extends TestCase
      *
      * @dataProvider validHostedDomainProvider
      *
-     * @param array       $providerConfig
-     * @param string      $json
-     * @param string|null $expectedHostedDomain
-     *
      * @throws Exception
      */
     public function testValidHostedDomains(
         array $providerConfig,
         string $json,
-        ?string $expectedHostedDomain
+        ?string $expectedHostedDomain = null
     ): void {
         // Mock
         $response = json_decode($json, true);
@@ -71,9 +67,6 @@ class HostedDomainCheckTest extends TestCase
      * Test combinations of hosted domain and user data that are invalid
      *
      * @dataProvider invalidHostedDomainProvider
-     *
-     * @param array  $providerConfig
-     * @param string $json
      */
     public function testInvalidHostedDomains(array $providerConfig, string $json): void
     {
