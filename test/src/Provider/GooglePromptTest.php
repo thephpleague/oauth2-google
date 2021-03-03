@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class GooglePromptTest extends TestCase
 {
-    public function testDefaultParameters()
+    public function testDefaultParameters(): void
     {
         $provider = new GoogleProvider([
             'clientId' => 'client-id',
@@ -16,10 +16,10 @@ class GooglePromptTest extends TestCase
 
         $params = $this->getQueryParams($provider->getAuthorizationUrl());
 
-        $this->assertArrayNotHasKey('approval_prompt', $params);
+        self::assertArrayNotHasKey('approval_prompt', $params);
     }
 
-    public function testPromptParameters()
+    public function testPromptParameters(): void
     {
         $provider = new GoogleProvider([
             'clientId' => 'client-id',
@@ -29,14 +29,10 @@ class GooglePromptTest extends TestCase
 
         $params = $this->getQueryParams($provider->getAuthorizationUrl());
 
-        $this->assertArrayNotHasKey('approval_prompt', $params);
+        self::assertArrayNotHasKey('approval_prompt', $params);
     }
 
-    /**
-     * @param string $url
-     * @return array
-     */
-    private function getQueryParams($url)
+    private function getQueryParams(string $url): array
     {
         $uri = parse_url($url);
         parse_str($uri['query'], $query);

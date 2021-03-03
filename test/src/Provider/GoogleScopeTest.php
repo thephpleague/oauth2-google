@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class GoogleScopeTest extends TestCase
 {
-    public function testDefaultScopes()
+    public function testDefaultScopes(): void
     {
         $provider = new GoogleProvider([
             'clientId' => 'client-id',
@@ -16,10 +16,10 @@ class GoogleScopeTest extends TestCase
 
         $params = $this->getQueryParams($provider->getAuthorizationUrl());
 
-        $this->assertSame('openid email profile', $params['scope']);
+        self::assertSame('openid email profile', $params['scope']);
     }
 
-    public function testProviderScopes()
+    public function testProviderScopes(): void
     {
         $provider = new GoogleProvider([
             'clientId' => 'client-id',
@@ -31,10 +31,10 @@ class GoogleScopeTest extends TestCase
 
         $params = $this->getQueryParams($provider->getAuthorizationUrl());
 
-        $this->assertContains($yt, $params['scope']);
+        self::assertStringContainsString($yt, $params['scope']);
     }
 
-    public function testOptionScopes()
+    public function testOptionScopes(): void
     {
         $provider = new GoogleProvider([
             'clientId' => 'client-id',
@@ -47,14 +47,10 @@ class GoogleScopeTest extends TestCase
             ],
         ]));
 
-        $this->assertContains($yt, $params['scope']);
+        self::assertStringContainsString($yt, $params['scope']);
     }
 
-    /**
-     * @param string $url
-     * @return array
-     */
-    private function getQueryParams($url)
+    private function getQueryParams($url): array
     {
         $uri = parse_url($url);
         parse_str($uri['query'], $query);

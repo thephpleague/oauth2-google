@@ -5,7 +5,7 @@ namespace League\OAuth2\Client\Test\Provider;
 use Eloquent\Phony\Phpunit\Phony;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
-use League\OAuth2\Client\Provider\GoogleUser;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class GoogleTest extends TestCase
     /** @var GoogleProvider */
     protected $provider;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->provider = new GoogleProvider([
             'clientId' => 'mock_client_id',
@@ -26,53 +26,53 @@ class GoogleTest extends TestCase
         ]);
     }
 
-    public function testAuthorizationUrl()
+    public function testAuthorizationUrl(): void
     {
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
         parse_str($uri['query'], $query);
 
-        $this->assertArrayHasKey('client_id', $query);
-        $this->assertArrayHasKey('redirect_uri', $query);
-        $this->assertArrayHasKey('state', $query);
-        $this->assertArrayHasKey('scope', $query);
-        $this->assertArrayHasKey('response_type', $query);
-        $this->assertArrayHasKey('hd', $query);
-        $this->assertArrayHasKey('access_type', $query);
-        $this->assertArrayHasKey('prompt', $query);
+        self::assertArrayHasKey('client_id', $query);
+        self::assertArrayHasKey('redirect_uri', $query);
+        self::assertArrayHasKey('state', $query);
+        self::assertArrayHasKey('scope', $query);
+        self::assertArrayHasKey('response_type', $query);
+        self::assertArrayHasKey('hd', $query);
+        self::assertArrayHasKey('access_type', $query);
+        self::assertArrayHasKey('prompt', $query);
 
-        $this->assertEquals('mock_access_type', $query['access_type']);
-        $this->assertEquals('mock_domain', $query['hd']);
-        $this->assertEquals('select_account', $query['prompt']);
+        self::assertEquals('mock_access_type', $query['access_type']);
+        self::assertEquals('mock_domain', $query['hd']);
+        self::assertEquals('select_account', $query['prompt']);
 
-        $this->assertContains('email', $query['scope']);
-        $this->assertContains('profile', $query['scope']);
-        $this->assertContains('openid', $query['scope']);
+        self::assertStringContainsString('email', $query['scope']);
+        self::assertStringContainsString('profile', $query['scope']);
+        self::assertStringContainsString('openid', $query['scope']);
 
-        $this->assertAttributeNotEmpty('state', $this->provider);
+        self::assertNotEmpty($this->provider->getState());
     }
 
-    public function testBaseAccessTokenUrl()
+    public function testBaseAccessTokenUrl(): void
     {
         $url = $this->provider->getBaseAccessTokenUrl([]);
         $uri = parse_url($url);
 
-        $this->assertEquals('/token', $uri['path']);
+        self::assertEquals('/token', $uri['path']);
     }
 
     /**
      * @link https://accounts.google.com/.well-known/openid-configuration
      */
-    public function testResourceOwnerDetailsUrl()
+    public function testResourceOwnerDetailsUrl(): void
     {
         $token = $this->mockAccessToken();
 
         $url = $this->provider->getResourceOwnerDetailsUrl($token);
 
-        $this->assertEquals('https://openidconnect.googleapis.com/v1/userinfo', $url);
+        self::assertEquals('https://openidconnect.googleapis.com/v1/userinfo', $url);
     }
 
-    public function testUserData()
+    public function testUserData(): void
     {
         // Mock
         $response = [
@@ -99,27 +99,27 @@ class GoogleTest extends TestCase
             $provider->fetchResourceOwnerDetails->called()
         );
 
-        $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
+        self::assertInstanceOf(ResourceOwnerInterface::class, $user);
 
-        $this->assertEquals(12345, $user->getId());
-        $this->assertEquals('mock name', $user->getName());
-        $this->assertEquals('mock', $user->getFirstName());
-        $this->assertEquals('name', $user->getLastName());
-        $this->assertEquals('mock.name@example.com', $user->getEmail());
-        $this->assertEquals('example.com', $user->getHostedDomain());
-        $this->assertEquals('mock_image_url', $user->getAvatar());
+        self::assertEquals(12345, $user->getId());
+        self::assertEquals('mock name', $user->getName());
+        self::assertEquals('mock', $user->getFirstName());
+        self::assertEquals('name', $user->getLastName());
+        self::assertEquals('mock.name@example.com', $user->getEmail());
+        self::assertEquals('example.com', $user->getHostedDomain());
+        self::assertEquals('mock_image_url', $user->getAvatar());
 
         $user = $user->toArray();
 
-        $this->assertArrayHasKey('sub', $user);
-        $this->assertArrayHasKey('name', $user);
-        $this->assertArrayHasKey('email', $user);
-        $this->assertArrayHasKey('hd', $user);
-        $this->assertArrayHasKey('picture', $user);
-        $this->assertArrayHasKey('family_name', $user);
+        self::assertArrayHasKey('sub', $user);
+        self::assertArrayHasKey('name', $user);
+        self::assertArrayHasKey('email', $user);
+        self::assertArrayHasKey('hd', $user);
+        self::assertArrayHasKey('picture', $user);
+        self::assertArrayHasKey('family_name', $user);
     }
 
-    public function testErrorResponse()
+    public function testErrorResponse(): void
     {
         // Mock
         $error_json = '{"error": {"code": 400, "message": "I am an error"}}';
@@ -149,10 +149,7 @@ class GoogleTest extends TestCase
         );
     }
 
-    /**
-     * @return AccessToken
-     */
-    private function mockAccessToken()
+    private function mockAccessToken(): AccessToken
     {
         return new AccessToken([
             'access_token' => 'mock_access_token',
