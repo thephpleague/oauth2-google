@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class GoogleUserTest extends TestCase
 {
-    public function testUserDefaults()
+    public function testUserDefaults(): void
     {
         // Mock
         $user = new GoogleUser([
@@ -21,17 +21,17 @@ class GoogleUserTest extends TestCase
             'locale' => 'en',
         ]);
 
-        $this->assertEquals(12345, $user->getId());
-        $this->assertEquals('mock name', $user->getName());
-        $this->assertEquals('mock', $user->getFirstName());
-        $this->assertEquals('name', $user->getLastName());
-        $this->assertEquals('en', $user->getLocale());
-        $this->assertEquals('mock.name@example.com', $user->getEmail());
-        $this->assertEquals('example.com', $user->getHostedDomain());
-        $this->assertEquals('mock_image_url', $user->getAvatar());
+        self::assertEquals(12345, $user->getId());
+        self::assertEquals('mock name', $user->getName());
+        self::assertEquals('mock', $user->getFirstName());
+        self::assertEquals('name', $user->getLastName());
+        self::assertEquals('en', $user->getLocale());
+        self::assertEquals('mock.name@example.com', $user->getEmail());
+        self::assertEquals('example.com', $user->getHostedDomain());
+        self::assertEquals('mock_image_url', $user->getAvatar());
     }
 
-    public function testUserPartialData()
+    public function testUserPartialData(): void
     {
         $user = new GoogleUser([
             'sub' => '12345',
@@ -40,24 +40,24 @@ class GoogleUserTest extends TestCase
             'family_name' => 'name',
         ]);
 
-        $this->assertEquals(null, $user->getEmail());
-        $this->assertEquals(null, $user->getHostedDomain());
-        $this->assertEquals(null, $user->getAvatar());
-        $this->assertEquals(null, $user->getLocale());
+        self::assertEquals(null, $user->getEmail());
+        self::assertEquals(null, $user->getHostedDomain());
+        self::assertEquals(null, $user->getAvatar());
+        self::assertEquals(null, $user->getLocale());
     }
 
-    public function testUserMinimalData()
+    public function testUserMinimalData(): void
     {
         $user = new GoogleUser([
             'sub' => '12345',
             'name' => 'mock name',
         ]);
 
-        $this->assertEquals(null, $user->getEmail());
-        $this->assertEquals(null, $user->getHostedDomain());
-        $this->assertEquals(null, $user->getAvatar());
-        $this->assertEquals(null, $user->getLocale());
-        $this->assertEquals(null, $user->getFirstName());
-        $this->assertEquals(null, $user->getLastName());
+        self::assertEquals(null, $user->getEmail());
+        self::assertEquals(null, $user->getHostedDomain());
+        self::assertEquals(null, $user->getAvatar());
+        self::assertEquals(null, $user->getLocale());
+        self::assertEquals(null, $user->getFirstName());
+        self::assertEquals(null, $user->getLastName());
     }
 }

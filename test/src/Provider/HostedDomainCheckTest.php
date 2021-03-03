@@ -3,26 +3,28 @@
 namespace League\OAuth2\Client\Test\Provider;
 
 use Eloquent\Phony\Phpunit\Phony;
+use Exception;
 use League\OAuth2\Client\Exception\HostedDomainException;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google as GoogleProvider;
 use League\OAuth2\Client\Provider\GoogleUser;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 
 class HostedDomainCheckTest extends TestCase
 {
-
     /**
      * Test combinations of hosted domain and user data that are valid
      *
      * @dataProvider validHostedDomainProvider
-     * @param $providerConfig
-     * @param $json
-     * @param $expectedHostedDomain
+     *
+     * @throws Exception
      */
-    public function testValidHostedDomains(array $providerConfig, $json, $expectedHostedDomain)
-    {
+    public function testValidHostedDomains(
+        array $providerConfig,
+        string $json,
+        ?string $expectedHostedDomain = null
+    ): void {
         // Mock
         $response = json_decode($json, true);
 
@@ -41,11 +43,11 @@ class HostedDomainCheckTest extends TestCase
             $provider->fetchResourceOwnerDetails->called()
         );
 
-        $this->assertInstanceOf('League\OAuth2\Client\Provider\ResourceOwnerInterface', $user);
-        $this->assertEquals($expectedHostedDomain, $user->getHostedDomain());
+        self::assertInstanceOf(ResourceOwnerInterface::class, $user);
+        self::assertEquals($expectedHostedDomain, $user->getHostedDomain());
     }
 
-    public function validHostedDomainProvider()
+    public function validHostedDomainProvider(): array
     {
         // Any domain or no domain is allowed if not specified
         $noHostedDomainConfig = [];
@@ -65,9 +67,8 @@ class HostedDomainCheckTest extends TestCase
      * Test combinations of hosted domain and user data that are invalid
      *
      * @dataProvider invalidHostedDomainProvider
-     * @param $json
      */
-    public function testInvalidHostedDomains(array $providerConfig, $json)
+    public function testInvalidHostedDomains(array $providerConfig, string $json): void
     {
         $this->expectException(HostedDomainException::class);
         // Mock
@@ -83,7 +84,7 @@ class HostedDomainCheckTest extends TestCase
         $google->getResourceOwner($token);
     }
 
-    public function invalidHostedDomainProvider()
+    public function invalidHostedDomainProvider(): array
     {
         // Wildcard requires a domain. No domain implies gmail
         $wildCardHostedDomain = [['hostedDomain' => '*']];
@@ -91,17 +92,14 @@ class HostedDomainCheckTest extends TestCase
         $hostedDomainConfig = [['hostedDomain' => 'example.com']];
         return [
             // A domain is required for wild cards
-            [ $wildCardHostedDomain, '{"email": "mock_email"}', null],
+            [ $wildCardHostedDomain, '{"email": "mock_email"}'],
             // A domain is required for specific domains
-            [ $hostedDomainConfig, '{"email": "mock_email"}', null],
+            [ $hostedDomainConfig, '{"email": "mock_email"}'],
             [ $hostedDomainConfig, '{"email": "mock_email", "hd": "wrong.example.com"}'],
         ];
     }
 
-    /**
-     * @return AccessToken
-     */
-    private function mockAccessToken()
+    private function mockAccessToken(): AccessToken
     {
         return new AccessToken([
             'access_token' => 'mock_access_token',
