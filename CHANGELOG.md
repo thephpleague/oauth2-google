@@ -4,8 +4,8 @@ OAuth 2.0 Google Provider Changelog
 
 ### Changed
 
-- Add PHP 8.0 support, require PHP 7.3 or newer
-- Add types where possible
+- Adding return type, #98 by @yozhef
+- Add PHP 8.0 support, require PHP 7.3 or newer, #102 by @yozhef
 
 ## 3.0.4 - 2021-01-27
 
