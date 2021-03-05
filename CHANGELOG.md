@@ -4,8 +4,6 @@ OAuth 2.0 Google Provider Changelog
 
 ### Changed
 
-- Add GitHub Actions instead Travis, #96 by @yozhef
-- Update Code Style level to PSR-12, #97 by @yozhef
 - Adding return type, #98 by @yozhef
 - Add CodeCov instead PHP Coveralls #100 by @yozhef
 - Add PHP 8.0 support, require PHP 7.3 or newer, #102 by @yozhef
