@@ -5,7 +5,6 @@ OAuth 2.0 Google Provider Changelog
 ### Changed
 
 - Adding return type, #98 by @yozhef
-- Add CodeCov instead PHP Coveralls #100 by @yozhef
 - Add PHP 8.0 support, require PHP 7.3 or newer, #102 by @yozhef
 
 ## 3.0.4 - 2021-01-27
