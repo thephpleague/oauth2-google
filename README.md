@@ -177,7 +177,7 @@ $refreshToken = $token->getRefreshToken();
 If you ever need to get a new refresh token you can request one by forcing the consent prompt:
 
 ```php
-$authUrl = $provider->getAuthorizationUrl(['prompt' => 'consent','access_type'=>'offline']);
+$authUrl = $provider->getAuthorizationUrl(['prompt' => 'consent', 'access_type'=>'offline']);
 ```
 
 Now you have everything you need to refresh an access token using a refresh token:
