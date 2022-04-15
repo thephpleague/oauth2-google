@@ -124,9 +124,12 @@ class GoogleTest extends TestCase
         // Mock
         $error_json = '{"error": {"code": 400, "message": "I am an error"}}';
 
+        $stream = Phony::mock('GuzzleHttp\Psr7\Stream');
+        $stream->__toString->returns($error_json);
+
         $response = Phony::mock('GuzzleHttp\Psr7\Response');
         $response->getHeader->returns(['application/json']);
-        $response->getBody->returns($error_json);
+        $response->getBody->returns($stream);
 
         $provider = Phony::partialMock(GoogleProvider::class);
         $provider->getResponse->returns($response);
