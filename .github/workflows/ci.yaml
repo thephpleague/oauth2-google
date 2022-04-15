@@ -15,6 +15,7 @@ jobs:
                     - '7.3'
                     - '7.4'
                     - '8.0'
+                    - '8.1'
                 minimum_versions: [false]
                 coverage: ['none']
                 include:
@@ -22,7 +23,7 @@ jobs:
                       php: '7.3'
                       minimum_versions: true
                     - description: 'Log Code Coverage'
-                      php: '7.4'
+                      php: '8.1'
                       coverage: 'xdebug'
 
         name: PHP ${{ matrix.php }} ${{ matrix.description }}
