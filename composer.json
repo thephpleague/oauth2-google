@@ -39,5 +39,8 @@
     },
     "scripts": {
         "check": "phpcs src test --standard=PSR12 -sp"
+    },
+    "suggest": {
+        "google/apiclient": "Enables validating ID tokens."
     }
 }

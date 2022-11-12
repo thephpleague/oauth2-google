@@ -2,6 +2,8 @@
 
 namespace League\OAuth2\Client\Provider;
 
+use Firebase\JWT\JWK;
+use Google\Client;
 use League\OAuth2\Client\Exception\HostedDomainException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
@@ -124,6 +126,16 @@ class Google extends AbstractProvider
 
         $this->assertMatchingDomain($user->getHostedDomain());
 
+        return $user;
+    }
+
+    public function createResourceOwnerFromIdToken(string $idToken): GoogleUser {
+        if (!class_exists(Client::class)) {
+            throw new \RuntimeException('google/apiclient library required for ID token verification.');
+        }
+        $client = new Client(['client_id' => $this->clientId]);
+        $user = new GoogleUser($client->verifyIdToken($idToken));
+        $this->assertMatchingDomain($user->getHostedDomain());
         return $user;
     }
 

@@ -2,6 +2,8 @@
 
 namespace League\OAuth2\Client\Provider;
 
+use Google\Client;
+
 class GoogleUser implements ResourceOwnerInterface
 {
     /**
