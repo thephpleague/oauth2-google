@@ -1,5 +1,11 @@
 OAuth 2.0 Google Provider Changelog
 
+## 4.0.1 - 2022-03-17
+
+### Changed
+
+- Corrected file excludes for dist archive, #120 by @cedric-anne
+
 ## 4.0.0 - 2022-03-04
 
 ### Changed
