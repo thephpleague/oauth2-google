@@ -19,6 +19,6 @@ session_start();
 $provider = new Google(compact('clientId', 'clientSecret', 'redirectUri'));
 
 // No HTML for demo, prevents any attempt at XSS
-header('Content-Type', 'text/plain');
+header('Content-Type: text/plain');
 
 return $provider;
