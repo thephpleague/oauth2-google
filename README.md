@@ -1,6 +1,6 @@
 # Google Provider for OAuth 2.0 Client
 
-[![Build Status](https://img.shields.io/github/workflow/status/thephpleague/oauth2-google/test/main)](https://github.com/thephpleague/oauth2-google/actions/workflows/test.yaml)
+[![Build Status](https://img.shields.io/github/workflow/status/thephpleague/oauth2-google/ci/main)](https://github.com/thephpleague/oauth2-google/actions/workflows/test.yaml)
 [![Code Coverage](https://img.shields.io/codecov/c/gh/thephpleague/oauth2-google)](https://app.codecov.io/gh/thephpleague/oauth2-google)
 [![License](https://img.shields.io/packagist/l/league/oauth2-google)](https://github.com/thephpleague/oauth2-google/blob/main/LICENSE)
 [![Latest Stable Version](https://img.shields.io/packagist/v/league/oauth2-google)](https://packagist.org/packages/league/oauth2-google)
