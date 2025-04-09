@@ -36,6 +36,12 @@ class Google extends AbstractProvider
      */
     protected $scopes = [];
 
+    public function getResponse(RequestInterface $request)
+    {
+        // Google is super slow without this
+        return $this->getHttpClient()->send($request, ['force_ip_resolve' => 'v4']);
+    }
+
     public function getBaseAuthorizationUrl(): string
     {
         return 'https://accounts.google.com/o/oauth2/v2/auth';
