@@ -13,6 +13,7 @@ class GoogleUserTest extends TestCase
         $user = new GoogleUser([
             'sub' => '12345',
             'email' => 'mock.name@example.com',
+            'email_verified' => true,
             'name' => 'mock name',
             'given_name' => 'mock',
             'family_name' => 'name',
@@ -29,6 +30,8 @@ class GoogleUserTest extends TestCase
         self::assertEquals('mock.name@example.com', $user->getEmail());
         self::assertEquals('example.com', $user->getHostedDomain());
         self::assertEquals('mock_image_url', $user->getAvatar());
+        self::assertTrue($user->getEmailVerified());
+        self::assertTrue($user->isEmailTrustworthy());
     }
 
     public function testUserPartialData(): void
@@ -44,6 +47,8 @@ class GoogleUserTest extends TestCase
         self::assertEquals(null, $user->getHostedDomain());
         self::assertEquals(null, $user->getAvatar());
         self::assertEquals(null, $user->getLocale());
+        self::assertNull($user->getEmailVerified());
+        self::assertFalse($user->isEmailTrustworthy());
     }
 
     public function testUserMinimalData(): void
@@ -59,5 +64,72 @@ class GoogleUserTest extends TestCase
         self::assertEquals(null, $user->getLocale());
         self::assertEquals(null, $user->getFirstName());
         self::assertEquals(null, $user->getLastName());
+        self::assertNull($user->getEmailVerified());
+        self::assertFalse($user->isEmailTrustworthy());
+    }
+
+    public function testGmailTrustworthy(): void
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+            'email' => 'mock.email@gmail.com',
+        ]);
+
+        self::assertNull($user->getEmailVerified());
+        self::assertTrue($user->isEmailTrustworthy());
+    }
+
+    public function testAlmostGmailNotTrustworthy(): void
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+            'email' => 'mock.email@agmail.com',
+        ]);
+
+        self::assertNull($user->getEmailVerified());
+        self::assertFalse($user->isEmailTrustworthy());
+    }
+
+    public function testNonGmailWithHostedDomainTrustworthy(): void
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+            'email' => 'mock.email@example.com',
+            'email_verified' => true,
+            'hd' => 'example.com',
+        ]);
+
+        self::assertTrue($user->getEmailVerified());
+        self::assertTrue($user->isEmailTrustworthy());
+    }
+
+    public function testNonGmailNonVerifiedWithHostedDomainNotTrustworthy(): void
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+            'email' => 'mock.email@example.com',
+            'email_verified' => false,
+            'hd' => 'example.com',
+        ]);
+
+        self::assertFalse($user->getEmailVerified());
+        self::assertFalse($user->isEmailTrustworthy());
+    }
+
+    public function testNonGmailVerifiedWithoutHostedDomainNotTrustworthy(): void
+    {
+        $user = new GoogleUser([
+            'sub' => '12345',
+            'name' => 'mock name',
+            'email' => 'mock.email@example.com',
+            'email_verified' => true,
+        ]);
+
+        self::assertTrue($user->getEmailVerified());
+        self::assertFalse($user->isEmailTrustworthy());
     }
 }
